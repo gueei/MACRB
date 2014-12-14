@@ -15,5 +15,5 @@
 #define RB_EN A2
 
 #define STEPS_FOR_1CM  80.7
-#define STEPS_FOR_360 5400
+#define STEPS_FOR_360 5540
 #define ACCELERATION 500

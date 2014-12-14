@@ -1,0 +1,21 @@
+Forward Design Changes Report
+-----------------------------
+
+Report File:        C:\Users\gueei_000\Documents\GitHub\MACRB\Hardware\SensorBoard (PCB - Forward Design Changes Report).txt
+Report Written:     Monday, December 15, 2014
+Project Path:       C:\Users\gueei_000\Documents\GitHub\MACRB\Hardware\SensorBoard.prj
+Design Path:        C:\Users\gueei_000\Documents\GitHub\MACRB\Hardware\SensorBoard.pcb
+Design Title:       
+Created:            12/14/2014 10:30:51 AM
+Last Saved:         12/15/2014 12:05:58 AM
+Editing Time:       82 min
+Units:              mm (precision 3)
+
+Disconnected pin "USX-1" from net "VSS".
+Disconnected pin "USX-2" from net "GND".
+
+Connected pin "USX-1" to net "GND".
+Connected pin "USX-2" to net "VSS".
+
+
+End Of Report.

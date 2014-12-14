@@ -5,7 +5,7 @@
 Drivebase drive;
 void setup(){
   drive.enableMotor(true);
-  drive.rotateAngle(500, PI);
+  drive.rotateAngle(1000, 2*PI);
 }
 
 void loop(){
