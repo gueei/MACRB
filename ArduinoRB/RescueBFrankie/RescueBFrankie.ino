@@ -6,7 +6,7 @@ void setup(){
   int initOrient = 1;
   Map rmap = Map();
   
-  //rmap.tiles[2][2].setWall(South, true);
+  rmap.tiles[2][2].setWall(South, true);
   Coordinate coor[MAP_WIDTH][MAP_HEIGHT];
   coor[2][3].x=2;
   coor[2][3].y=3;

@@ -1,4 +1,4 @@
-#define  MAP_WIDTH    4
+#define  MAP_WIDTH    5
 #define  MAP_HEIGHT   7
 
 
