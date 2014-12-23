@@ -43,6 +43,7 @@ class Map{
     void setWall(Coordinate coor, Direction dir);//1
     void printMap();//2
     void findPath(Coordinate start, Coordinate dest, int initOrient);//3
+    Maptile prevTile[MAP_WIDTH][MAP_HEIGHT];
   private:
     
 };
