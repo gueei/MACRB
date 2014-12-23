@@ -6,6 +6,7 @@ void setup(){
   
   rmap.tiles[0][0].setWall(North, true);
   rmap.tiles[0][0].type = black;
+  rmap.tiles[0][0].type = black;
 }
 
 void loop(){
