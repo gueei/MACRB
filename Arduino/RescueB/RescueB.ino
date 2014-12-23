@@ -1,11 +1,7 @@
+#include "Configuration.h"
+#include <AccelStepper.h>
 #include <Event.h>
 #include <Timer.h>
-
-#include "Configuration.h"
-#include <Wire.h>
-#include <HMC5883L.h>
-
-#include <AccelStepper.h>
 #include "Drivebase.h"
 #include "Sensors.h"
 

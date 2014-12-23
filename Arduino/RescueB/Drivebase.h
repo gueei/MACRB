@@ -1,10 +1,10 @@
 #include "Arduino.h"
 #include "Configuration.h"
+#include <AccelStepper.h>
 
 #ifndef Drivebase_h
 #define Drivebase_h
 
-#include <AccelStepper.h>
 
 class Drivebase{
 public:
