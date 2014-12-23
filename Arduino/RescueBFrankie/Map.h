@@ -31,16 +31,18 @@ class Maptile{
     TileType type;
     void setWall(Direction dir, boolean on);
     boolean hasWall(Direction dir);
-  private:
     byte walls;
+  private:
 };
 
 class Map{
   public:
     Map();
     Maptile tiles[MAP_WIDTH][MAP_HEIGHT];
-    void setWall(Coordinate coor, Direction dir);
-    void printMap();
-    void findPath(Coordinate start, Coordinate dest);
+    void tSetWall(Coordinate coor, Direction dir);//1
+    void printMap();//2
+    void findPath(Coordinate start, Coordinate dest);//3
   private:
+    byte tWalls;
+    
 };
