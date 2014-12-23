@@ -1,6 +1,4 @@
-#include <Wire.h>
-
-//#include <SoftI2CMaster.h>
+#include <i2cmaster.h>
 
 #define HMC5883L_Address 0x1E
 #define ConfigurationRegisterA 0x00
@@ -12,62 +10,103 @@
 #define Measurement_SingleShot 0x01
 #define Measurement_Idle 0x03
 
-//SoftI2CMaster Wire = SoftI2CMaster();
-
-struct MagnetometerRaw
-{
-	int XAxis;
-	int YAxis;
-	int ZAxis;
-};
-
 void setup(){
-  //Wire.setPins(21, 20, true);
-  Wire.begin();
-  setMeasurementMode(Measurement_Continuous);
   Serial.begin(115200);
+  Serial.println("START");
+
+  i2c_init();
+  delay(100);
+
+  magnetometerInit();
+  delay(1000);
 }
 
 void loop(){
-  uint8_t* buffer = hRead(DataRegisterBegin, 6);
-  MagnetometerRaw raw = MagnetometerRaw();
-  raw.XAxis = (buffer[0] << 8) | buffer[1];
-  raw.ZAxis = (buffer[2] << 8) | buffer[3];
-  raw.YAxis = (buffer[4] << 8) | buffer[5];
-  Serial.println(raw.XAxis);
-  delay(500);
+  Serial.print(180 * heading() / PI);
+  Serial.print("\t");
+  Serial.println(temperatureCelcius(0x55<<1));
+  delay(1000);
 }
 
-void hWrite(int address, int data)
-{
-  Wire.beginTransmission(HMC5883L_Address);
-  Wire.write(address);
-  Wire.write(data);
-  Wire.endTransmission();
+void magnetometerInit(){
+  i2c_start_wait(0x3C);
+  Serial.println(i2c_write(0x01));
+  Serial.println(i2c_write(0x00));
+  i2c_stop();
+
+// Mode continuous
+  i2c_start_wait(0x3C);
+  Serial.println(i2c_write(0x02));
+  Serial.println(i2c_write(0x00));
+  i2c_stop();
 }
 
-uint8_t* hRead(int address, int length)
-{
-  Wire.beginTransmission(HMC5883L_Address);
-  Wire.write(address);
-  Wire.endTransmission();
+float heading(){
+  uint8_t buffer[6];
+  i2c_start_wait(0x3C);
+  i2c_write(0x03);
+  i2c_rep_start(0x3D);
+  buffer[0] = i2c_readAck();
+  buffer[1] = i2c_readAck();
+  buffer[2] = i2c_readAck();
+  buffer[3] = i2c_readAck();
+  buffer[4] = i2c_readAck();
+  buffer[5] = i2c_readNak();
+  i2c_stop();
+
+  int xaxis = ((buffer[0] << 8) | buffer[1]) * 0.73;
+  int yaxis = ((buffer[2] << 8) | buffer[3]) * 0.73;
+  int zaxis = ((buffer[4] << 8) | buffer[5]) * 0.73;
   
-  Wire.beginTransmission(HMC5883L_Address);
-  Wire.requestFrom(HMC5883L_Address,length);
-
-  uint8_t buffer[length];
-
-	  for(uint8_t i = 0; i < length; i++)
-	  {
-		  buffer[i] = Wire.read();
-	  }
-
-  Wire.endTransmission();
-
-  return buffer;
+#ifndef DEBUG
+  Serial.print(xaxis);
+  Serial.print("\t");
+  Serial.print(yaxis);
+  Serial.print("\t");
+  Serial.print(zaxis);
+  Serial.print("\t");
+  Serial.println();
+#endif
+  float heading = atan2(yaxis, xaxis) + 0.0457;
+  
+  if(heading < 0)
+    heading += 2*PI;
+  if(heading > 2*PI)
+    heading -= 2*PI;
+    
+  return heading;
 }
 
-int setMeasurementMode(uint8_t mode)
-{
-  hWrite(ModeRegister, mode);
+float temperatureCelcius(int address) {
+  int dev = address;
+  int data_low = 0;
+  int data_high = 0;
+  int pec = 0;
+
+  // Write
+  i2c_start_wait(dev+I2C_WRITE);
+  i2c_write(0x07);
+
+  // Read
+  i2c_rep_start(dev+I2C_READ);
+  data_low = i2c_readAck();       // Read 1 byte and then send ack.
+  data_high = i2c_readAck();      // Read 1 byte and then send ack.
+  pec = i2c_readNak();
+  i2c_stop();
+
+  // This converts high and low bytes together and processes temperature, 
+  // MSB is a error bit and is ignored for temps.
+  double tempFactor = 0.02;       // 0.02 degrees per LSB (measurement 
+                                  // resolution of the MLX90614).
+  double tempData = 0x0000;       // Zero out the data
+  int frac;                       // Data past the decimal point
+
+  // This masks off the error bit of the high byte, then moves it left 
+  // 8 bits and adds the low byte.
+  tempData = (double)(((data_high & 0x007F) << 8) + data_low);
+  tempData = (tempData * tempFactor)-0.01;
+  float celcius = tempData - 273.15;
+  
+  // Returns temperature un Celcius.
+  return celcius;
 }

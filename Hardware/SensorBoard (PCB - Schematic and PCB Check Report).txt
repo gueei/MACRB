@@ -2,13 +2,13 @@ Schematic and PCB Check Report
 ------------------------------
 
 Report File:        C:\Users\gueei_000\Documents\GitHub\MACRB\Hardware\SensorBoard (PCB - Schematic and PCB Check Report).txt
-Report Written:     Monday, December 15, 2014
+Report Written:     Wednesday, December 17, 2014
 Project Path:       C:\Users\gueei_000\Documents\GitHub\MACRB\Hardware\SensorBoard.prj
 Design Path:        C:\Users\gueei_000\Documents\GitHub\MACRB\Hardware\SensorBoard.pcb
 Design Title:       
 Created:            12/14/2014 10:30:51 AM
-Last Saved:         12/15/2014 12:05:58 AM
-Editing Time:       82 min
+Last Saved:         12/17/2014 9:36:11 PM
+Editing Time:       220 min
 Units:              mm (precision 3)
 
 

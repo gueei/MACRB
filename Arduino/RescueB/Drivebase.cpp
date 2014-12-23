@@ -73,6 +73,6 @@ void Drivebase::rotateSteps(int spd, long steps){
 }
 
 void Drivebase::rotateAngle(int spd, float angle){
-  long steps = angle / (2*PI) * STEPS_FOR_360;
+  long steps = angle / (2*PI) * (float)STEPS_FOR_360;
   rotateSteps(spd, steps);
 }

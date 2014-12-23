@@ -2,81 +2,21 @@ Design Rule Check Report
 ------------------------
 
 Report File:        C:\Users\gueei_000\Documents\GitHub\MACRB\Hardware\SensorBoard (PCB - Design Rule Check Report).txt
-Report Written:     Sunday, December 14, 2014
+Report Written:     Thursday, December 18, 2014
 Project Path:       C:\Users\gueei_000\Documents\GitHub\MACRB\Hardware\SensorBoard.prj
 Design Path:        C:\Users\gueei_000\Documents\GitHub\MACRB\Hardware\SensorBoard.pcb
 Design Title:       
 Created:            12/14/2014 10:30:51 AM
-Last Saved:         12/14/2014 10:32:27 AM
-Editing Time:       7 min
-Units:              mm (precision 1)
+Last Saved:         12/18/2014 9:55:54 PM
+Editing Time:       919 min
+Units:              mm (precision 3)
 
 
 Results
 =======
 
-Pad to Board Error (P-B) between (480.6 516.9) and (480.0 516.9) on Layer "[All]".
-    Error between Pad and Board, Gap is 0.5 needs to be 2.5.
-Pad to Board Error (P-B) between (518.9 516.9) and (520.0 516.9) on Layer "[All]".
-    Error between Pad and Board, Gap is 1.0 needs to be 2.5.
-Gap in Net "A5" between (515.6,495.3) and (508.0,508.0) 
-    A5.
-Gap in Net "A9" between (497.8,505.5) and (490.2,492.8) 
-    A9.
-Gap in Net "A10" between (515.6,492.8) and (505.5,497.8) 
-    A10.
-Gap in Net "A11" between (497.8,497.8) and (490.2,497.8) 
-    A11.
-Gap in Net "A11" between (497.8,497.8) and (513.1,513.1) 
-    A11.
-Gap in Net "A12" between (515.6,487.7) and (485.1,508.0) 
-    A12.
-Gap in Net "D40" between (497.8,502.9) and (497.8,485.1) 
-    D40.
-Gap in Net "D40" between (497.8,502.9) and (481.3,533.4) 
-    D40.
-Gap in Net "D42" between (497.8,500.4) and (490.2,500.4) 
-    D42.
-Gap in Net "D42" between (490.2,500.4) and (485.1,513.1) 
-    D42.
-Gap in Net "D44" between (515.6,490.2) and (497.8,487.7) 
-    D44.
-Gap in Net "D44" between (497.8,487.7) and (481.3,529.6) 
-    D44.
-Gap in Net "GND" between (497.8,508.0) and (505.5,502.9) 
-    GND.
-Gap in Net "GND" between (505.5,502.9) and (513.1,508.0) 
-    GND.
-Gap in Net "GND" between (497.8,508.0) and (490.2,502.9) 
-    GND.
-Gap in Net "GND" between (490.2,502.9) and (485.1,502.9) 
-    GND.
-Gap in Net "GND" between (485.1,502.9) and (485.1,492.8) 
-    GND.
-Gap in Net "GND" between (485.1,492.8) and (497.8,490.2) 
-    GND.
-Gap in Net "VSS" between (515.6,497.8) and (505.5,500.4) 
-    VSS.
-Gap in Net "VSS" between (505.5,500.4) and (510.5,508.0) 
-    VSS.
-Gap in Net "VSS" between (510.5,508.0) and (502.9,513.1) 
-    VSS.
-Gap in Net "VSS" between (502.9,513.1) and (495.3,513.1) 
-    VSS.
-Gap in Net "VSS" between (495.3,513.1) and (490.2,505.5) 
-    VSS.
-Gap in Net "VSS" between (490.2,505.5) and (485.1,505.5) 
-    VSS.
-Gap in Net "VSS" between (505.5,500.4) and (497.8,492.8) 
-    VSS.
-Gap in Net "VSS" between (497.8,492.8) and (487.7,492.8) 
-    VSS.
-Gap in Net "VSS" between (495.3,513.1) and (491.5,529.6) 
-    VSS.
-Gap in Net "VSS" between (491.5,529.6) and (491.5,533.4) 
-    VSS.
 
-Number of errors found : 30
+No errors found
 
 
 Settings

@@ -2,20 +2,47 @@ Forward Design Changes Report
 -----------------------------
 
 Report File:        C:\Users\gueei_000\Documents\GitHub\MACRB\Hardware\SensorBoard (PCB - Forward Design Changes Report).txt
-Report Written:     Monday, December 15, 2014
+Report Written:     Wednesday, December 17, 2014
 Project Path:       C:\Users\gueei_000\Documents\GitHub\MACRB\Hardware\SensorBoard.prj
 Design Path:        C:\Users\gueei_000\Documents\GitHub\MACRB\Hardware\SensorBoard.pcb
 Design Title:       
 Created:            12/14/2014 10:30:51 AM
-Last Saved:         12/15/2014 12:05:58 AM
-Editing Time:       82 min
+Last Saved:         12/17/2014 9:36:11 PM
+Editing Time:       220 min
 Units:              mm (precision 3)
 
-Disconnected pin "USX-1" from net "VSS".
-Disconnected pin "USX-2" from net "GND".
+Disconnected pin "SIIC1-3" from net "N0033".
+Disconnected pin "SIIC1-4" from net "N0034".
+Disconnected pin "R1-1" from net "N0041".
+Disconnected pin "R2-1" from net "N0042".
+Disconnected pin "SIIC2-3" from net "N0035".
+Disconnected pin "SIIC2-4" from net "N0036".
+Disconnected pin "SIIC3-3" from net "N0037".
+Disconnected pin "SIIC3-4" from net "N0038".
+Disconnected pin "SIIC4-3" from net "N0039".
+Disconnected pin "SIIC4-4" from net "N0040".
 
-Connected pin "USX-1" to net "GND".
-Connected pin "USX-2" to net "VSS".
+Deleted net "N0033".
+Deleted net "N0034".
+Deleted net "N0035".
+Deleted net "N0036".
+Deleted net "N0037".
+Deleted net "N0038".
+Deleted net "N0039".
+Deleted net "N0040".
+Deleted net "N0041".
+Deleted net "N0042".
+
+Connected pin "SIIC1-3" to net "SSDA".
+Connected pin "SIIC1-4" to net "SSCL".
+Connected pin "R1-1" to net "SSDA".
+Connected pin "R2-1" to net "SSCL".
+Connected pin "SIIC2-3" to net "SSDA".
+Connected pin "SIIC2-4" to net "SSCL".
+Connected pin "SIIC3-3" to net "SSDA".
+Connected pin "SIIC3-4" to net "SSCL".
+Connected pin "SIIC4-3" to net "SSDA".
+Connected pin "SIIC4-4" to net "SSCL".
 
 
 End Of Report.
