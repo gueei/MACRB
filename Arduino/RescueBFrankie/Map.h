@@ -1,6 +1,7 @@
 #define  MAP_WIDTH    4
 #define  MAP_HEIGHT   7
 
+
 #include <Arduino.h>
 #include <inttypes.h>
 #include <QueueList.h>
@@ -39,10 +40,9 @@ class Map{
   public:
     Map();
     Maptile tiles[MAP_WIDTH][MAP_HEIGHT];
-    void tSetWall(Coordinate coor, Direction dir);//1
+    void setWall(Coordinate coor, Direction dir);//1
     void printMap();//2
-    void findPath(Coordinate start, Coordinate dest);//3
+    void findPath(Coordinate start, Coordinate dest, int initOrient);//3
   private:
-    byte tWalls;
     
 };

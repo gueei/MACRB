@@ -1,3 +1,4 @@
+#include <QueueList.h>
 #include "Map.h"
 
 // Constructor
@@ -25,40 +26,47 @@ Map::Map(){
   }
 }
 
-void Map::tSetWall(Coordinate coor, Direction dir){
-  if(dir==0x01){
-    tWalls |= dir;
-    tiles[coor.x-1][coor.y].walls  |= 0x04;
+void Map::setWall(Coordinate coor, Direction dir){
+  if(dir==North){
+    tiles[coor.x][coor.y].setWall(North,true);
+    tiles[coor.x-1][coor.y].setWall(South,true);
   }
-  if(dir==0x02){
-    tWalls |= dir;
-    tiles[coor.x][coor.y+1].walls |=0x08;
+  if(dir==East){
+    tiles[coor.x][coor.y].setWall(East,true);
+    tiles[coor.x][coor.y+1].setWall(West,true);
   }
-  if(dir==0x04){
-    tWalls |= dir;
-    tiles[coor.x+1][coor.y].walls |=0x01;
+  if(dir==South){
+    tiles[coor.x][coor.y].setWall(South,true);
+    tiles[coor.x+1][coor.y].setWall(North,true);
   }
-  if(dir==0x08){
-    tWalls |= dir;
-    tiles[coor.x][coor.y-1].walls |=0x02;
+  if(dir==West){
+    tiles[coor.x][coor.y].setWall(West,true);
+    tiles[coor.x][coor.y-1].setWall(East,true);
   }
 }
 
 void Map::printMap(){
+  Serial.println("Map:");
   for(int j=0; j<MAP_HEIGHT; j++){
     for(int i=0; i<MAP_WIDTH; i++){
       Serial.print(tiles[i][j].type);
-      if (tiles[i][j].walls==0x02) Serial.print("|");
-      else Serial.print(" ");
+      if (tiles[i][j].hasWall(East)) Serial.print("|");
+      else Serial.print("\t");
     }
     
     Serial.println();
     
     for(int i=0; i<MAP_WIDTH; i++){
-      if (tiles[i][j].walls==0x04) Serial.print("- ");
-      else Serial.print("  ");
+      if (tiles[i][j].hasWall(South)) Serial.print("- ");
+      else Serial.print("\t");
     }
     
     Serial.println();
   }
 }
+
+void findPath(Coordinate start, Coordinate dest, int initOrient){
+  QueueList <Coordinate> Q; // Queue
+  
+     
+     };
