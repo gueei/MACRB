@@ -1,6 +1,5 @@
 #include "Arduino.h"
 #include "Configuration.h"
-#include <i2cmaster.h>
 
 #ifndef Sensors_h
 #define Sensors_h
