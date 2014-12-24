@@ -24,14 +24,14 @@ void setup(){
 void loop(){
   Serial.print(180 * heading() / PI);
   Serial.print("\t");
-  Serial.println(temperatureCelcius(0x55<<1));
+  //Serial.println(temperatureCelcius(0x55<<1));
   delay(1000);
 }
 
 void magnetometerInit(){
   i2c_start_wait(0x3C);
   Serial.println(i2c_write(0x01));
-  Serial.println(i2c_write(0x00));
+  Serial.println(i2c_write(0x01 << 5));
   i2c_stop();
 
 // Mode continuous
@@ -54,9 +54,9 @@ float heading(){
   buffer[5] = i2c_readNak();
   i2c_stop();
 
-  int xaxis = ((buffer[0] << 8) | buffer[1]) * 0.73;
-  int yaxis = ((buffer[2] << 8) | buffer[3]) * 0.73;
-  int zaxis = ((buffer[4] << 8) | buffer[5]) * 0.73;
+  int xaxis = ((buffer[0] << 8) | buffer[1]) * 0.92;
+  int yaxis = ((buffer[2] << 8) | buffer[3]) * 0.92;
+  int zaxis = ((buffer[4] << 8) | buffer[5]) * 0.92;
   
 #ifndef DEBUG
   Serial.print(xaxis);

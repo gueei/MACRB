@@ -1,9 +1,11 @@
+#define DEBUGLEVEL  4 // 0 - no debug, 1 - basic, 5 - verbal
+//#define DEBUGSENSOR 0
+
 #include <Event.h>
 #include <Timer.h>
 
 #include "Configuration.h"
-#include <Wire.h>
-#include <HMC5883L.h>
+#include <i2cmaster.h>
 
 #include <AccelStepper.h>
 #include "Drivebase.h"
@@ -18,17 +20,20 @@ int sensorRecordEvent, decisionEvent;
 
 RescueBTask task = RescueBTask();
 
-//Drivebase drive;
+Drivebase drive;
 Sensors sensors;
 int mode = 1;
 void setup(){
+  // Hardware bus init
+  i2c_init();
   Serial.begin(115200);
-  Serial.println("START");
+  delay(500);
   
-  Wire.begin();
+  
+
+  Serial.println("START");
+  drive.enableMotor(false);
   sensors.init();
-  //drive.enableMotor(false);
-  // i2c_init();
   
   decisionEvent = timer.every(TIMER_DECISION, makeDecision);
 //  drive.enableMotor(true);
