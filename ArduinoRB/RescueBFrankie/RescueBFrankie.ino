@@ -1,21 +1,32 @@
+#define DEBUGLEVEL 4
+
 #include <QueueList.h>
 #include "Map.h"
+
+Coordinate start;
+  Map rmap = Map();
 
 void setup(){
   Serial.begin(115200);
   int initOrient = 1;
-  Map rmap = Map();
   
-  rmap.tiles[2][2].setWall(South, true);
-  Coordinate coor[MAP_WIDTH][MAP_HEIGHT];
-  coor[2][3].x=2;
-  coor[2][3].y=3;
-  rmap.setWall(coor[2][3],South);
+  rmap.setWall(2, 3,South);
+  rmap.setWall(0, 0,South);
   rmap.tiles[3][4].type = black;
   rmap.tiles[3][0].type = speedbump;
   rmap.printMap();
+  start.x = 0;
+  start.y = 0;
 }
 
 void loop(){
+  rmap.tiles[start.x][start.y].visits = 1;
+ 
+  start = rmap.findPath(start, North);
+  Serial.print("New destination");
+  rmap.printCoordinate(start);
+  Serial.println();
+  // rmap.findPath(start, East);
   
+  delay(5000);
 }
