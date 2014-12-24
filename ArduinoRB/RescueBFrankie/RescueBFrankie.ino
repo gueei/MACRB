@@ -1,6 +1,7 @@
 #define DEBUGLEVEL 4
 
 #include <QueueList.h>
+#include <StackArray.h>
 #include "Map.h"
 
 Coordinate start;
@@ -17,16 +18,17 @@ void setup(){
   rmap.printMap();
   start.x = 0;
   start.y = 0;
+  rmap.findPath(start, North);
 }
 
 void loop(){
-  rmap.tiles[start.x][start.y].visits = 1;
+  /*rmap.tiles[start.x][start.y].visits = 1;
  
   start = rmap.findPath(start, North);
   Serial.print("New destination");
   rmap.printCoordinate(start);
   Serial.println();
-  // rmap.findPath(start, East);
   
   delay(5000);
+  */
 }

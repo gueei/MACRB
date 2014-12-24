@@ -1,4 +1,5 @@
 #include <QueueList.h>
+#include <StackArray.h>
 #include "Map.h"
 
 // Constructor
@@ -72,7 +73,10 @@ void Map::printMap(){
 
 Coordinate Map::findPath(Coordinate start, Direction currentDirection){
   QueueList <Coordinate> Q; // Queue
+  StackArray <Coordinate> St; //Stack
   Coordinate t;
+  Coordinate p; //present
+  Coordinate n; //next
   boolean V[MAP_WIDTH][MAP_HEIGHT]; // Visited Set
   backTrack track[MAP_WIDTH][MAP_HEIGHT];
   for(int i=0;i<MAP_WIDTH; i++)
@@ -117,86 +121,102 @@ Coordinate Map::findPath(Coordinate start, Direction currentDirection){
         Serial.println();
    }
    
-   Coordinate destination = determineDestination(start, track);
+   Coordinate destination;
+   destination.x=3;
+   destination.y=3;
+   //determineDestination(start, track);
    printCoordinate(destination);
    Serial.println();
    
    //return destination;
 
-    
- /*   // Print track in reverse order
-  int evalX=goalx;
-  int evalY=goaly;
+  int evalX=destination.x;
+  int evalY=destination.y;
   
-  while(!(evalX==startx && evalY==starty)){
-    Serial.println("Evaluating:");
-    Serial.print(evalX);
+  St.push(destination);
+  
+  while(!(evalX==start.x && evalY==start.y)){
+  backTrack evaluating = track[evalX][evalY];
+  
+     evalX = evaluating.prevTile.x;
+     evalY = evaluating.prevTile.y;
+     
+     St.push(evaluating.prevTile);
+  }
+  
+  while(!St.isEmpty()){
+    p = St.pop();
+    n = St.peek();
+    
+  backTrack evaluating = track[n.x][n.y];
+    Serial.println("Path taken:");
+    Serial.print(p.x);
     Serial.print("\t");
-    Serial.println(evalY);
-   Serial.println("Forward 30");
-   backTrack evaluating = track[evalX][evalY];
-   if( track[evaluating.prevTile.x][evaluating.prevTile.y].facing == track[evalX][evalY].facing){
+    Serial.println(p.y);
+    Serial.println("Forward 30");
+    
+    if( track[n.x][n.y].facing == track[p.x][p.y].facing){
       Serial.println("No rotation");
-       Serial.print("Facing of prevTile:  ");
-      Serial.print(track[evaluating.prevTile.x][evaluating.prevTile.y].facing);
+      Serial.print("Facing of current tile:  ");
+      Serial.print(track[p.x][p.y].facing);
       Serial.print("\t");
-       Serial.print("Facing of evaluating tile:  ");
-      Serial.println(track[evalX][evalY].facing);
+      Serial.print("Facing of evaluating tile:  ");
+      Serial.println(track[n.x][n.y].facing);
       Serial.println();
      }
      else if(
-     (track[evaluating.prevTile.x][evaluating.prevTile.y].facing==1 && track[evalX][evalY].facing==0) ||
-     (track[evaluating.prevTile.x][evaluating.prevTile.y].facing==2 && track[evalX][evalY].facing==1) ||
-     (track[evaluating.prevTile.x][evaluating.prevTile.y].facing==3 && track[evalX][evalY].facing==2) ||
-     (track[evaluating.prevTile.x][evaluating.prevTile.y].facing==0 && track[evalX][evalY].facing==3)
+     (track[p.x][p.y].facing==East && track[n.x][n.y].facing==North) ||
+     (track[p.x][p.y].facing==South && track[n.x][n.y].facing==East) ||
+     (track[p.x][p.y].facing==West && track[n.x][n.y].facing==South) ||
+     (track[p.x][p.y].facing==North && track[n.x][n.y].facing==West)
      ){
-       Serial.println("Turn left 90°");
-       Serial.print("Facing of prevTile:  ");
-      Serial.print(track[evaluating.prevTile.x][evaluating.prevTile.y].facing);
+      Serial.println("Turn left 90°");
+      Serial.print("Facing of current tile:  ");
+      Serial.print(track[p.x][p.y].facing);
       Serial.print("\t");
        Serial.print("Facing of evaluating tile:  ");
-      Serial.println(track[evalX][evalY].facing);
+      Serial.println(track[n.x][n.y].facing);
       Serial.println();
      }
      else if(
-     (track[evaluating.prevTile.x][evaluating.prevTile.y].facing==0 && track[evalX][evalY].facing==1) ||
-     (track[evaluating.prevTile.x][evaluating.prevTile.y].facing==1 && track[evalX][evalY].facing==2) ||
-     (track[evaluating.prevTile.x][evaluating.prevTile.y].facing==2 && track[evalX][evalY].facing==3) ||
-     (track[evaluating.prevTile.x][evaluating.prevTile.y].facing==3 && track[evalX][evalY].facing==0)
+     (track[p.x][p.y].facing==North && track[n.x][n.y].facing==East) ||
+     (track[p.x][p.y].facing==East && track[n.x][n.y].facing==South) ||
+     (track[p.x][p.y].facing==South && track[n.x][n.y].facing==West) ||
+     (track[p.x][p.y].facing==West && track[n.x][n.y].facing==North)
      ){
        Serial.println("Turn right 90°");
-       Serial.print("Facing of prevTile:  ");
-      Serial.print(track[evaluating.prevTile.x][evaluating.prevTile.y].facing);
+      Serial.print("Facing of current tile:  ");
+      Serial.print(track[p.x][p.y].facing);
       Serial.print("\t");
        Serial.print("Facing of evaluating tile:  ");
-      Serial.println(track[evalX][evalY].facing);
+      Serial.println(track[n.x][n.y].facing);
       Serial.println();
      }
      else if(
-     (track[evaluating.prevTile.x][evaluating.prevTile.y].facing==0 && track[evalX][evalY].facing==2) ||
-     (track[evaluating.prevTile.x][evaluating.prevTile.y].facing==1 && track[evalX][evalY].facing==3) ||
-     (track[evaluating.prevTile.x][evaluating.prevTile.y].facing==2 && track[evalX][evalY].facing==0) ||
-     (track[evaluating.prevTile.x][evaluating.prevTile.y].facing==3 && track[evalX][evalY].facing==1)
+     (track[p.x][p.y].facing==North && track[n.x][n.y].facing==South) ||
+     (track[p.x][p.y].facing==East && track[n.x][n.y].facing==West) ||
+     (track[p.x][p.y].facing==South && track[n.x][n.y].facing==North) ||
+     (track[p.x][p.y].facing==West && track[n.x][n.y].facing==East)
      ){
      Serial.println("Turn 180°");
-       Serial.print("Facing of prevTile:  ");
-      Serial.print(track[evaluating.prevTile.x][evaluating.prevTile.y].facing);
+      Serial.print("Facing of current tile:  ");
+      Serial.print(track[p.x][p.y].facing);
       Serial.print("\t");
        Serial.print("Facing of evaluating tile:  ");
-      Serial.println(track[evalX][evalY].facing);
+      Serial.println(track[n.x][n.y].facing);
       Serial.println();
      }
      else{ Serial.println("Error");
-       Serial.print("Facing of prevTile:  ");
-      Serial.print(track[evaluating.prevTile.x][evaluating.prevTile.y].facing);
+      Serial.print("Facing of current tile:  ");
+      Serial.print(track[p.x][p.y].facing);
       Serial.print("\t");
        Serial.print("Facing of evaluating tile:  ");
-      Serial.println(track[evalX][evalY].facing);
+      Serial.println(track[n.x][n.y].facing);
       Serial.println();
      };
-     evalX = evaluating.prevTile.x;
-     evalY = evaluating.prevTile.y;
-  }   */
+    
+    
+  };  
 };
 
 void Map::findAvailableTile(
@@ -228,7 +248,7 @@ void Map::findAvailableTile(
   n.y = desty;  
   Q.push(n);
   
-  backTrack cTrack = track[cx][cy];
+  backTrack cTrack = track[cx][cy]; //current
   backTrack dTrack = track[destx][desty];
   int orientCost = 0;
   if(cTrack.facing==dir) {

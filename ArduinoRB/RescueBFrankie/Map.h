@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <inttypes.h>
 #include <QueueList.h>
+#include <StackArray.h>
 
 enum TileType{
   normal = 1,
@@ -36,7 +37,7 @@ class Maptile{
     Maptile();  // Constructor
     TileType type;
     int visits;
-    void setWall(Direction dir, boolean on);
+    void setWall(Direction dir, boolean on); //only one wall
     boolean hasWall(Direction dir);
     byte walls;
   private:
@@ -46,11 +47,10 @@ class Map{
   public:
     Map();
     Maptile tiles[MAP_WIDTH][MAP_HEIGHT];
-    void setWall(Coordinate coor, Direction dir);//1
-    void setWall(int x, int y, Direction dir);
-    void printMap();//2
+    void setWall(Coordinate coor, Direction dir);// both walls at once
+    void setWall(int x, int y, Direction dir);//same as above but different way to input parameters
+    void printMap();
     Coordinate findPath(Coordinate start, Direction currentDirection);
-    //Maptile prevTile[MAP_WIDTH][MAP_HEIGHT];
     void printCoordinate(Coordinate coor);
   private:
     void findAvailableTile(int cx, int cy, Direction dir, 
