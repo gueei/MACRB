@@ -16,19 +16,65 @@ void setup(){
 
   i2c_init();
   delay(100);
-
+  
+  ks109Init();
+  delay(2000);
+  
   magnetometerInit();
   delay(1000);
+  
+  
 }
 
 void loop(){
   Serial.print(180 * heading() / PI);
   Serial.print("\t");
+  Serial.println();
+  getRange();
   //Serial.println(temperatureCelcius(0x55<<1));
   delay(1000);
 }
 
+void ks109Init(){
+  Serial.println("init ks109");
+  i2c_start_wait(0xe8);             // Start communticating with KS103
+  i2c_write(0x02);                              // Send Reg
+  i2c_write(0x71);                                // Send 0x72 to set USB Power
+  i2c_stop();
+}
+
+void getRange(){
+  i2c_start_wait(0xe8);             // Start communticating with KS103
+  i2c_write(0x02);                              // Send Reg
+  i2c_write(0xbc);                                // Send 0x72 to set USB Power
+  i2c_stop();
+  
+  delay(50);
+  i2c_start_wait(0xe8);             // Start communticating with KS103
+  i2c_write(0x02);
+  i2c_stop();
+  
+  delay(50);
+  
+  i2c_start_wait(0xe9);             // Start communticating with KS103
+  
+  int high = i2c_readAck();
+  int low = i2c_readNak();
+  
+  int range = (high << 8) + low;
+  
+  i2c_stop();
+  
+  Serial.println("RANGE");
+  Serial.print(high, HEX);
+  Serial.print("\t");
+  Serial.print(low, HEX);
+  Serial.print("\t");
+  Serial.println(range, DEC);
+}
+
 void magnetometerInit(){
+  Serial.println("init magnetometer");
   i2c_start_wait(0x3C);
   Serial.println(i2c_write(0x01));
   Serial.println(i2c_write(0x01 << 5));

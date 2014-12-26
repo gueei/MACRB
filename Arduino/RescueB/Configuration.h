@@ -1,4 +1,10 @@
+#define DEBUGLEVEL  4 // 0 - no debug, 1 - basic, 5 - verbal
 #include "Arduino.h"
+
+#define NORTH 3.09
+#define SOUTH 6.13
+#define EAST 4.60
+#define WEST 1.56
 
 // Stepper Motor definitions
 #define LF_DIR 28
@@ -14,8 +20,8 @@
 #define RB_STEP A6
 #define RB_EN A2
 
-#define STEPS_FOR_1CM  80.7
-#define STEPS_FOR_360 6415
+#define STEPS_FOR_1CM  75
+#define STEPS_FOR_360 6200
 #define ACCELERATION 500
 
 // Software I2C
@@ -37,17 +43,25 @@
 #define Measurement_SingleShot 0x01
 #define Measurement_Idle 0x03
 
-#define Compass_Scale  0.92
-#define Compass_Scale_Setting  0x01 << 5
+#define Compass_Scale  0.73
+#define Compass_Scale_Setting  0x00 << 5
 
 // Ir Distance
-#define DIST_LEFT_PIN  A9
-#define DIST_RIGHT_PIN  A10
+#define DIST_LEFT_PIN  A10
+#define DIST_RIGHT_PIN  A9
+
+// Ground Gray Sensor
+#define GRAY_PIN  A11
 
 // Ultrasonic front - TODO
-#define DIST_FRONT_ADDR  0x01<<1
+#define KS109  0xe8
+
+// Servo for sensor tower
+#define SENSOR_SERVO_PIN 11
+#define SENSOR_SERVO_CENTER 1586 // microsecond
 
 // Timer event trigger millisecond
 #define TIMER_SENSOR  200
-#define TIMER_DECISION  200
+#define TIMER_DECISION  1000
+
 

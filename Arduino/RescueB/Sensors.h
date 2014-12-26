@@ -1,6 +1,7 @@
 #include "Arduino.h"
 #include "Configuration.h"
 #include <i2cmaster.h>
+#include <Servo.h>
 
 #ifndef Sensors_h
 #define Sensors_h
@@ -26,8 +27,12 @@ class Sensors{
     // Basic functions
     float getTemperature(byte address);
     float getHeading();
-    
+    float getIrDistance(int pin, int samples);
+    float getGray();
     float readings[SensorType_Count];
+    float getRange();
+    void ks109Init();
+    Servo towerServo;
   private:
 };
 

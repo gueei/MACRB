@@ -1,12 +1,10 @@
-#define DEBUGLEVEL  4 // 0 - no debug, 1 - basic, 5 - verbal
-//#define DEBUGSENSOR 0
-
 #include <Event.h>
 #include <Timer.h>
 
 #include "Configuration.h"
 #include <i2cmaster.h>
 
+#include <Servo.h>
 #include <AccelStepper.h>
 #include "Drivebase.h"
 #include "Sensors.h"
@@ -23,40 +21,80 @@ RescueBTask task = RescueBTask();
 Drivebase drive;
 Sensors sensors;
 int mode = 1;
+float initOrientation = 0;
+boolean rotate = false;
 void setup(){
   // Hardware bus init
   i2c_init();
   Serial.begin(115200);
   delay(500);
   
-  
-
   Serial.println("START");
   drive.enableMotor(false);
   sensors.init();
+  delay(100);
+  
+  initOrientation = sensors.getHeading();
   
   decisionEvent = timer.every(TIMER_DECISION, makeDecision);
-//  drive.enableMotor(true);
+  /*
+  drive.enableMotor(true);
+  
+  turnToHeading(NORTH);
+  moveForward(30);
+  turnToHeading(WEST);
+  moveForward(30);
+  turnToHeading(SOUTH);
+  moveForward(30);
+  turnToHeading(EAST);
+  moveForward(30);
+  */
+  
+  drive.enableMotor(false);
+  
+  
 }
 
 void loop(){
   // Motor Driver need to run fastest possible
-  //drive.run();
+  drive.run();
   // Timer need to update fastest possible, too 
   timer.update();
   // Serial Event for handling Debug Mode
   // TODO
-  Serial.println(sensors.getHeading());
   
-  delay(500);
+  //delay(500);
 }
 
 // This replaced the main loop
 void makeDecision(){
   // Get Sensor Values
-  
+  sensors.checkAllValues();
   // Call the decision Maker class
   //task.onDecision(drive, sensors);
   // Log the sensor values, if necessary
   task.onLogging();
+}
+
+void moveForward(float distanceCm){
+  drive.forwardDistance(2000, distanceCm);
+  while(drive.distanceToGo()!=0){
+    drive.run();
+  }
+}
+
+void turnToHeading(float targetHeading){
+  // Tolerance 0.01
+  float error;
+  do{
+    sensors.checkAllValues();
+    error = sensors.getHeading() - targetHeading;
+    if (error>PI) error = error - 2*PI;
+    else if (error<-PI) error = error + 2*PI;
+    drive.rotateAngle(500, error);
+    Serial.println(error);
+    while(drive.distanceToGo()!=0){
+      drive.run();
+    }
+  }while(abs(error)>0.003);
 }

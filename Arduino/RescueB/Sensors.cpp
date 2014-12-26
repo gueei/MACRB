@@ -2,12 +2,15 @@
 #include "Configuration.h"
 #include "Sensors.h"
 #include <i2cmaster.h>
+#include <Servo.h>
 
 Sensors::Sensors(){}
 
 void Sensors::init(){
+  towerServo.attach(SENSOR_SERVO_PIN);
+  towerServo.writeMicroseconds(SENSOR_SERVO_CENTER);
+  
   // init Mangetometer
-  // 0.73 Resolution
   i2c_start_wait(HMC5883L_Address_Write);
   Serial.println(i2c_write(0x01));
   Serial.println(i2c_write(Compass_Scale_Setting));
@@ -19,7 +22,7 @@ void Sensors::init(){
   Serial.println(i2c_write(0x00));
   i2c_stop();
   
-#if DEBUGLEVEL > 2
+#if DEBUGLEVEL > 4
   i2c_start_wait(HMC5883L_Address_Write);
   i2c_write(0x01);
   i2c_rep_start(HMC5883L_Address_Read);
@@ -28,9 +31,22 @@ void Sensors::init(){
   i2c_stop();
 #endif
 
+  // init Range
+#if DEBUGLEVEL > 4
+  Serial.println("KS109 Init");
+#endif
+  ks109Init();
+
   for(int i=0; i<SensorType_Count; i++){
     readings[i] = -1;
   }
+}
+
+void Sensors::ks109Init(){
+  i2c_start_wait(KS109);             // Start communticating with KS103
+  i2c_write(0x02);                              // Send Reg
+  i2c_write(0x71);                                // Send 0x72 to set USB Power
+  i2c_stop();
 }
 
 // Fill in the sensor values with the current readings
@@ -38,8 +54,13 @@ void Sensors::checkAllValues(){
   readings[Heading] = getHeading();
   readings[Temp_Left] = getTemperature(TEMP_LEFT_ADDR);
   readings[Temp_Right] = getTemperature(TEMP_RIGHT_ADDR);
+  readings[Dist_Left] = getIrDistance(DIST_LEFT_PIN, 1);
+  readings[Dist_Right] = getIrDistance(DIST_RIGHT_PIN, 1);
+  readings[FloorGray] = getGray();
+  readings[Dist_Front] = getRange();
   
-#if DEBUGLEVEL > 3
+  
+#if DEBUGLEVEL > 2
   Serial.println("DEBUGLEVEL 3\tSensors::checkAllValues()");
   for(int i=0; i<SensorType_Count; i++){
     Serial.print(readings[i]);
@@ -49,8 +70,22 @@ void Sensors::checkAllValues(){
 #endif
 }
 
+float Sensors::getIrDistance(int pin, int samples){
+  double total = 0;
+  for(int i=0; i<samples; i++){
+    total += (1 / (0.000413153 * analogRead(pin) - 0.0055266887));
+  }
+  total /= samples;
+  if (total<3.7 || total>37) total = -1; // Out of range
+  return (float)total;
+}
+
 float Sensors::getTemperature(byte address) {
   return -1;
+}
+
+float Sensors::getGray(){
+  return analogRead(GRAY_PIN);
 }
 
 float Sensors::getHeading(){
@@ -89,4 +124,27 @@ float Sensors::getHeading(){
     heading -= 2*PI;
   
   return heading;
+}
+
+float Sensors::getRange(){
+  i2c_start_wait(KS109);             // Start communticating with KS103
+  i2c_write(0x02);                              // Send Reg
+  i2c_write(0xb4);                                // Send 0x72 to set USB Power
+  i2c_stop();
+  
+  i2c_start_wait(KS109);             // Start communticating with KS103
+  i2c_write(0x02);
+  i2c_stop();
+  
+  delay(80);
+  
+  i2c_start_wait(KS109+1);             // Start communticating with KS103
+  
+  int high = i2c_readAck();
+  int low = i2c_readNak();
+  
+  int range = (high << 8) + low;
+  
+  i2c_stop();
+  return range;
 }
