@@ -1,5 +1,5 @@
-#define  MAP_WIDTH    5
-#define  MAP_HEIGHT   7
+#define  MAP_WIDTH    10
+#define  MAP_HEIGHT   4
 
 #include <Arduino.h>
 #include <inttypes.h>
@@ -45,14 +45,16 @@ class Maptile{
 
 class Map{
   public:
-    Map();
+    Map(int entrancex, int entrancey);
     Maptile tiles[MAP_WIDTH][MAP_HEIGHT];
     void setWall(Coordinate coor, Direction dir);// both walls at once
     void setWall(int x, int y, Direction dir);//same as above but different way to input parameters
     void printMap();
-    Coordinate findPath(Coordinate start, Direction currentDirection);
+    StackArray <Coordinate> findPath(Coordinate start, Direction currentDirection);
     void printCoordinate(Coordinate coor);
+    static void debugMap(int ex, int ey);
   private:
+    Coordinate _entrance;
     void findAvailableTile(int cx, int cy, Direction dir, 
       boolean V[MAP_WIDTH][MAP_HEIGHT], backTrack track[MAP_WIDTH][MAP_HEIGHT], QueueList<Coordinate>& Q);
     Coordinate determineDestination(Coordinate start, backTrack track[MAP_WIDTH][MAP_HEIGHT]);

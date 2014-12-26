@@ -20,7 +20,9 @@ void Maptile::setWall(Direction dir, boolean on){
 }
 
 
-Map::Map(){
+Map::Map(int entrancex, int entrancey){
+  _entrance.x = entrancex;
+  _entrance.y = entrancey;
   for(int y=0; y<MAP_HEIGHT; y++){
     for(int x=0; x<MAP_WIDTH; x++){
       tiles[x][y] = Maptile();
@@ -39,7 +41,7 @@ void Map::setWall(int x, int y, Direction dir){
   }
   if(dir==South){
     tiles[x][y].setWall(South,true);
-    tiles[x][y-1].setWall(North,true);
+    tiles[x][y+1].setWall(North,true);
   }
   if(dir==West){
     tiles[x][y].setWall(West,true);
@@ -56,24 +58,28 @@ void Map::printMap(){
   for(int j=0; j<MAP_HEIGHT; j++){
     for(int i=0; i<MAP_WIDTH; i++){
       Serial.print(tiles[i][j].type);
+      Serial.print(" ");
+      Serial.print(tiles[i][j].visits);
+      Serial.print("\t");
       if (tiles[i][j].hasWall(East)) Serial.print("|");
-      else Serial.print("\t");
+      Serial.print("\t");
     }
     
     Serial.println();
     
     for(int i=0; i<MAP_WIDTH; i++){
-      if (tiles[i][j].hasWall(South)) Serial.print("- ");
-      else Serial.print("\t");
+      if (tiles[i][j].hasWall(South)) Serial.print("---");
+      else Serial.print("   ");      
+      Serial.print("\t");
+      Serial.print(" \t");
     }
     
     Serial.println();
   }
 }
 
-Coordinate Map::findPath(Coordinate start, Direction currentDirection){
+StackArray <Coordinate> Map::findPath(Coordinate start, Direction currentDirection){
   QueueList <Coordinate> Q; // Queue
-  StackArray <Coordinate> St; //Stack
   Coordinate t;
   Coordinate p; //present
   Coordinate n; //next
@@ -107,6 +113,7 @@ Coordinate Map::findPath(Coordinate start, Direction currentDirection){
   }
   
 // FOR DEBUG
+#if DEBUGLEVEL > 5
   for(int j=0;j<MAP_HEIGHT; j++){
         for(int i=0;i<MAP_WIDTH; i++){
           Serial.print(track[i][j].cost);
@@ -120,103 +127,30 @@ Coordinate Map::findPath(Coordinate start, Direction currentDirection){
         Serial.println();
         Serial.println();
    }
-   
-   Coordinate destination;
-   destination.x=3;
-   destination.y=3;
-   //determineDestination(start, track);
-   printCoordinate(destination);
-   Serial.println();
-   
-   //return destination;
+#endif
 
-  int evalX=destination.x;
-  int evalY=destination.y;
+   Coordinate destination;
+//   destination.x=3;
+//   destination.y=3;
+   destination = determineDestination(start, track);
+   if(destination.x<0) destination = _entrance;
+   
+   printCoordinate(destination);
+   
+   int evalX = destination.x;
+   int evalY = destination.y;
   
+  StackArray <Coordinate> St; //Stack
   St.push(destination);
   
   while(!(evalX==start.x && evalY==start.y)){
-  backTrack evaluating = track[evalX][evalY];
-  
-     evalX = evaluating.prevTile.x;
-     evalY = evaluating.prevTile.y;
-     
-     St.push(evaluating.prevTile);
+    backTrack evaluating = track[evalX][evalY];
+    St.push(evaluating.prevTile);
+    evalX = evaluating.prevTile.x;
+    evalY = evaluating.prevTile.y;
   }
   
-  while(!St.isEmpty()){
-    p = St.pop();
-    n = St.peek();
-    
-  backTrack evaluating = track[n.x][n.y];
-    Serial.println("Path taken:");
-    Serial.print(p.x);
-    Serial.print("\t");
-    Serial.println(p.y);
-    Serial.println("Forward 30");
-    
-    if( track[n.x][n.y].facing == track[p.x][p.y].facing){
-      Serial.println("No rotation");
-      Serial.print("Facing of current tile:  ");
-      Serial.print(track[p.x][p.y].facing);
-      Serial.print("\t");
-      Serial.print("Facing of evaluating tile:  ");
-      Serial.println(track[n.x][n.y].facing);
-      Serial.println();
-     }
-     else if(
-     (track[p.x][p.y].facing==East && track[n.x][n.y].facing==North) ||
-     (track[p.x][p.y].facing==South && track[n.x][n.y].facing==East) ||
-     (track[p.x][p.y].facing==West && track[n.x][n.y].facing==South) ||
-     (track[p.x][p.y].facing==North && track[n.x][n.y].facing==West)
-     ){
-      Serial.println("Turn left 90°");
-      Serial.print("Facing of current tile:  ");
-      Serial.print(track[p.x][p.y].facing);
-      Serial.print("\t");
-       Serial.print("Facing of evaluating tile:  ");
-      Serial.println(track[n.x][n.y].facing);
-      Serial.println();
-     }
-     else if(
-     (track[p.x][p.y].facing==North && track[n.x][n.y].facing==East) ||
-     (track[p.x][p.y].facing==East && track[n.x][n.y].facing==South) ||
-     (track[p.x][p.y].facing==South && track[n.x][n.y].facing==West) ||
-     (track[p.x][p.y].facing==West && track[n.x][n.y].facing==North)
-     ){
-       Serial.println("Turn right 90°");
-      Serial.print("Facing of current tile:  ");
-      Serial.print(track[p.x][p.y].facing);
-      Serial.print("\t");
-       Serial.print("Facing of evaluating tile:  ");
-      Serial.println(track[n.x][n.y].facing);
-      Serial.println();
-     }
-     else if(
-     (track[p.x][p.y].facing==North && track[n.x][n.y].facing==South) ||
-     (track[p.x][p.y].facing==East && track[n.x][n.y].facing==West) ||
-     (track[p.x][p.y].facing==South && track[n.x][n.y].facing==North) ||
-     (track[p.x][p.y].facing==West && track[n.x][n.y].facing==East)
-     ){
-     Serial.println("Turn 180°");
-      Serial.print("Facing of current tile:  ");
-      Serial.print(track[p.x][p.y].facing);
-      Serial.print("\t");
-       Serial.print("Facing of evaluating tile:  ");
-      Serial.println(track[n.x][n.y].facing);
-      Serial.println();
-     }
-     else{ Serial.println("Error");
-      Serial.print("Facing of current tile:  ");
-      Serial.print(track[p.x][p.y].facing);
-      Serial.print("\t");
-       Serial.print("Facing of evaluating tile:  ");
-      Serial.println(track[n.x][n.y].facing);
-      Serial.println();
-     };
-    
-    
-  };  
+  return St;
 };
 
 void Map::findAvailableTile(
@@ -293,4 +227,60 @@ void Map::printCoordinate(Coordinate coor){
   Serial.print(", ");
   Serial.print(coor.y);
   Serial.print(")");
+}
+
+void Map::debugMap(int ex, int ey){
+  Coordinate start;
+  Direction dir;
+  Map rmap = Map(ex, ey);
+  start.x = ex;
+  start.y = ey;
+  
+  rmap.setWall(0, 0,East);
+  rmap.setWall(3, 0,East);
+  rmap.setWall(7, 0,South);
+  rmap.setWall(1, 1,East);
+  rmap.setWall(3, 1,East);
+  rmap.setWall(4, 1,East);
+  rmap.setWall(5, 1,East);
+  rmap.setWall(7, 1,East);
+  rmap.setWall(2, 1,South);
+  rmap.setWall(4, 1,South);
+  rmap.setWall(7, 1,South);
+  rmap.setWall(0, 2,East);
+  rmap.setWall(3, 2,East);
+  rmap.setWall(5, 2,East);
+  rmap.setWall(8, 2,East);
+  rmap.setWall(1, 2,South);
+  rmap.setWall(5, 2,South);
+  rmap.setWall(8, 2,South);
+  rmap.setWall(2, 3,East);
+  rmap.setWall(5, 3,East);
+  rmap.setWall(6, 3,East);
+  rmap.printMap();
+  dir = North;
+  
+  do {
+     StackArray<Coordinate> pathStack = rmap.findPath(start, dir);
+    rmap.tiles[start.x][start.y].visits++;  
+ 
+    pathStack.pop(); // the starting
+    Coordinate next = pathStack.pop();
+
+    Serial.print("New destination");
+    rmap.printCoordinate(next);
+    Serial.println();
+
+    rmap.printMap();
+  
+  //delay(2000);
+    if (start.x == next.x){
+      if (start.y > next.y) dir = North;
+      else dir = South;
+    }else{
+      if (start.x>next.x) dir = West;
+      else dir = East;
+    }
+    start = next;   
+  }while(start.x!=ex || start.y !=ey);
 }
