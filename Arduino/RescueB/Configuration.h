@@ -26,7 +26,7 @@
 
 // Software I2C
 // MLX90614
-#define TEMP_LEFT_ADDR 0x54<<1
+#define TEMP_LEFT_ADDR 0x5A<<1
 #define TEMP_RIGHT_ADDR 0x55<<1
 
 // HMC5883L - Compass

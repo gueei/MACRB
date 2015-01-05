@@ -53,7 +53,7 @@ void Sensors::ks109Init(){
 void Sensors::checkAllValues(){
   readings[Heading] = getHeading();
   readings[Temp_Left] = getTemperature(TEMP_LEFT_ADDR);
-  readings[Temp_Right] = getTemperature(TEMP_RIGHT_ADDR);
+  //readings[Temp_Right] = getTemperature(TEMP_RIGHT_ADDR);
   readings[Dist_Left] = getIrDistance(DIST_LEFT_PIN, 1);
   readings[Dist_Right] = getIrDistance(DIST_RIGHT_PIN, 1);
   readings[FloorGray] = getGray();
@@ -78,10 +78,6 @@ float Sensors::getIrDistance(int pin, int samples){
   total /= samples;
   if (total<3.7 || total>37) total = -1; // Out of range
   return (float)total;
-}
-
-float Sensors::getTemperature(byte address) {
-  return -1;
 }
 
 float Sensors::getGray(){
@@ -147,4 +143,38 @@ float Sensors::getRange(){
   
   i2c_stop();
   return range;
+}
+
+float Sensors::getTemperature(byte address) {
+  int dev = address;
+  int data_low = 0;
+  int data_high = 0;
+  int pec = 0;
+
+  // Write
+  i2c_start_wait(dev+I2C_WRITE);
+  i2c_write(0x07);
+
+  // Read
+  i2c_rep_start(dev+I2C_READ);
+  data_low = i2c_readAck();       // Read 1 byte and then send ack.
+  data_high = i2c_readAck();      // Read 1 byte and then send ack.
+  pec = i2c_readNak();
+  i2c_stop();
+
+  // This converts high and low bytes together and processes temperature, 
+  // MSB is a error bit and is ignored for temps.
+  double tempFactor = 0.02;       // 0.02 degrees per LSB (measurement 
+                                  // resolution of the MLX90614).
+  double tempData = 0x0000;       // Zero out the data
+  int frac;                       // Data past the decimal point
+
+  // This masks off the error bit of the high byte, then moves it left 
+  // 8 bits and adds the low byte.
+  tempData = (double)(((data_high & 0x007F) << 8) + data_low);
+  tempData = (tempData * tempFactor)-0.01;
+  float celcius = tempData - 273.15;
+  
+  // Returns temperature un Celcius.
+  return celcius;
 }
