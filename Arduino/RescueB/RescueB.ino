@@ -36,7 +36,6 @@ void setup(){
   
   initOrientation = sensors.getHeading();
   
-  decisionEvent = timer.every(TIMER_DECISION, makeDecision);
   /*
   drive.enableMotor(true);
   
@@ -56,24 +55,8 @@ void setup(){
 }
 
 void loop(){
-  // Motor Driver need to run fastest possible
-  drive.run();
-  // Timer need to update fastest possible, too 
-  timer.update();
-  // Serial Event for handling Debug Mode
-  // TODO
-  
-  //delay(500);
-}
-
-// This replaced the main loop
-void makeDecision(){
-  // Get Sensor Values
   sensors.checkAllValues();
-  // Call the decision Maker class
-  //task.onDecision(drive, sensors);
-  // Log the sensor values, if necessary
-  task.onLogging();
+  delay(500);
 }
 
 void moveForward(float distanceCm){

@@ -53,10 +53,12 @@ void Sensors::ks109Init(){
 void Sensors::checkAllValues(){
   readings[Heading] = getHeading();
   readings[Temp_Left] = getTemperature(TEMP_LEFT_ADDR);
-  //readings[Temp_Right] = getTemperature(TEMP_RIGHT_ADDR);
+  readings[Temp_Right] = getTemperature(TEMP_RIGHT_ADDR);
   readings[Dist_Left] = getIrDistance(DIST_LEFT_PIN, 1);
   readings[Dist_Right] = getIrDistance(DIST_RIGHT_PIN, 1);
   readings[FloorGray] = getGray();
+  
+  Serial.println("Range");
   readings[Dist_Front] = getRange();
   
   
@@ -125,7 +127,7 @@ float Sensors::getHeading(){
 float Sensors::getRange(){
   i2c_start_wait(KS109);             // Start communticating with KS103
   i2c_write(0x02);                              // Send Reg
-  i2c_write(0xb4);                                // Send 0x72 to set USB Power
+  i2c_write(0xb8);                                // Send 0x72 to set USB Power
   i2c_stop();
   
   i2c_start_wait(KS109);             // Start communticating with KS103
