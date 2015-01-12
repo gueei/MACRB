@@ -75,10 +75,10 @@ void Sensors::checkAllValues(){
 float Sensors::getIrDistance(int pin, int samples){
   double total = 0;
   for(int i=0; i<samples; i++){
-    total += (1 / (0.000413153 * analogRead(pin) - 0.0055266887));
+    total += (1 / (0.000413153 * analogRead(pin) - 0.0055266887)) * 10;
   }
   total /= samples;
-  if (total<3.7 || total>37) total = -1; // Out of range
+  if (total<37 || total>370) total = -1; // Out of range
   return (float)total;
 }
 

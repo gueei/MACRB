@@ -1,10 +1,19 @@
 #define DEBUGLEVEL  4 // 0 - no debug, 1 - basic, 5 - verbal
 #include "Arduino.h"
 
-#define NORTH 3.09
-#define SOUTH 6.13
-#define EAST 4.60
-#define WEST 1.56
+#define NORTH 4.65
+#define SOUTH 1.67
+#define EAST 6.04
+#define WEST 3.29
+
+#define  MAP_WIDTH    5
+#define  MAP_HEIGHT   3
+
+#define ENTRANCEX  1
+#define ENTRANCEY  2
+
+#define BLACK_THRESHOLD 50
+#define VICTIM_TEMP  28
 
 // Stepper Motor definitions
 #define LF_DIR 28
@@ -20,7 +29,7 @@
 #define RB_STEP A6
 #define RB_EN A2
 
-#define STEPS_FOR_1CM  75
+#define STEPS_FOR_1CM  73
 #define STEPS_FOR_360 6200
 #define ACCELERATION 500
 
@@ -59,6 +68,12 @@
 // Servo for sensor tower
 #define SENSOR_SERVO_PIN 11
 #define SENSOR_SERVO_CENTER 1586 // microsecond
+
+// LED
+#define LED_PIN  A12
+
+// Calibration Mode
+#define CALIBRATION_MODE_PIN  40
 
 // Timer event trigger millisecond
 #define TIMER_SENSOR  200
