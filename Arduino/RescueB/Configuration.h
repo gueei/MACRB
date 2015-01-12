@@ -1,4 +1,4 @@
-#define DEBUGLEVEL  4 // 0 - no debug, 1 - basic, 5 - verbal
+#define DEBUGLEVEL  6 // 0 - no debug, 1 - basic, 5 - verbal
 #include "Arduino.h"
 
 #define NORTH 4.65
@@ -9,7 +9,7 @@
 #define  MAP_WIDTH    5
 #define  MAP_HEIGHT   3
 
-#define ENTRANCEX  1
+#define ENTRANCEX  0
 #define ENTRANCEY  2
 
 #define BLACK_THRESHOLD 50

@@ -22,11 +22,9 @@ void Maptile::setWall(Direction dir, boolean on){
 }
 
 
-Map::Map(int entrancex, int entrancey){
-  _entrance.x = entrancex;
-  _entrance.y = entrancey;
-  for(int y=0; y<MAP_HEIGHT; y++){
-    for(int x=0; x<MAP_WIDTH; x++){
+Map::Map(int width, int height){
+  for(int y=0; y<height; y++){
+    for(int x=0; x<width; x++){
       tiles[x][y] = Maptile();
     } 
   }
@@ -80,7 +78,7 @@ void Map::printMap(){
   }
 }
 
-StackArray <Coordinate> Map::findPath(Coordinate start, Direction currentDirection){
+StackArray <Coordinate> Map::findPath(Coordinate start, Direction currentDirection, Coordinate entrance){
   QueueList <Coordinate> Q; // Queue
   Coordinate t;
   Coordinate p; //present
@@ -133,7 +131,7 @@ StackArray <Coordinate> Map::findPath(Coordinate start, Direction currentDirecti
 
    Coordinate destination;
    destination = determineDestination(start, track);
-   if(destination.x<0) destination = _entrance;
+   if(destination.x<0) destination = entrance;
    
    printCoordinate(destination);
    
@@ -267,11 +265,19 @@ void Map::debugMap(int ex, int ey){
   dir = North;
   
   do {
-     StackArray<Coordinate> pathStack = rmap.findPath(start, dir);
+    Coordinate entrance;
+    entrance.x = ex;
+    entrance.y = ey;
+    StackArray<Coordinate> pathStack = rmap.findPath(start, dir, entrance);
+    
     rmap.tiles[start.x][start.y].visits++;  
  
+    if (pathStack.count()<=1) break;
+    
     pathStack.pop(); // the starting
     Coordinate next = pathStack.pop();
+    
+    
 
     Serial.print("New destination");
     rmap.printCoordinate(next);
@@ -279,7 +285,7 @@ void Map::debugMap(int ex, int ey){
 
     rmap.printMap();
   
-  //delay(2000);
+    delay(2000);
     if (start.x == next.x){
       if (start.y > next.y) dir = North;
       else dir = South;
@@ -288,5 +294,5 @@ void Map::debugMap(int ex, int ey){
       else dir = East;
     }
     start = next;   
-  }while(start.x!=ex || start.y !=ey);
+  }while(true);
 }

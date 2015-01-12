@@ -44,17 +44,16 @@ class Maptile{
 
 class Map{
   public:
-    Map(int entrancex, int entrancey);
+    Map(int width, int height);
     Maptile tiles[MAP_WIDTH][MAP_HEIGHT];
     void setWall(Coordinate coor, Direction dir);// both walls at once
     void setWall(int x, int y, Direction dir);//same as above but different way to input parameters
     void printMap();
     void addVisit(Coordinate coor);
-    StackArray <Coordinate> findPath(Coordinate start, Direction currentDirection);
+    StackArray <Coordinate> findPath(Coordinate start, Direction currentDirection, Coordinate entrance);
     void printCoordinate(Coordinate coor);
     static void debugMap(int ex, int ey);
   private:
-    Coordinate _entrance;
     void findAvailableTile(int cx, int cy, Direction dir, 
       boolean V[MAP_WIDTH][MAP_HEIGHT], backTrack track[MAP_WIDTH][MAP_HEIGHT], QueueList<Coordinate>& Q);
     Coordinate determineDestination(Coordinate start, backTrack track[MAP_WIDTH][MAP_HEIGHT]);

@@ -41,8 +41,8 @@ void setup(){
   
   delay(100);
   
-  Map rmap = Map(1,2);
-  rmap.debugMap(1, 2);
+  //Map rmap = Map(MAP_WIDTH,MAP_HEIGHT);
+  //Map::debugMap(0,2);
   
   if(digitalRead(CALIBRATION_MODE_PIN)){
     for(;;){
@@ -50,8 +50,7 @@ void setup(){
       delay(500);
     }
   }
-  
-  
+
   taskRescue();
 }
 
@@ -93,66 +92,60 @@ void taskRescue(){
     Direction dir = North;
     
     while( true ){
-      rmap.addVisit(current);
-      float values;
       sensors.checkAllValues();
       
-      if(sensors.readings[Sensors::Dist_Left]<=2000){
-        //rmap.setWall(current.x, current.y, wallDir(dir, West));
+      if(sensors.readings[Sensors::Dist_Left]<=200 && sensors.readings[Sensors::Dist_Left]>0){
+        rmap.setWall(current.x, current.y, wallDir(dir, West));
       }
-      else if(sensors.readings[Sensors::Dist_Right]<=2000){
-        //rmap.setWall(current.x, current.y, wallDir(dir, East));
+      if(sensors.readings[Sensors::Dist_Right]<=200 && sensors.readings[Sensors::Dist_Right]>0){
+        rmap.setWall(current.x, current.y, wallDir(dir, East));
       }
-      else if(sensors.readings[Sensors::Dist_Front]<=200){
-        //rmap.setWall(current.x, current.y, wallDir(dir, North));
+      if(sensors.readings[Sensors::Dist_Front]<=200 && sensors.readings[Sensors::Dist_Front]>0){
+        rmap.setWall(current.x, current.y, wallDir(dir, North));
       }
-        
-      StackArray <Coordinate> stack;
-      stack=rmap.findPath(current, dir);
       
+      rmap.addVisit(current);
+      
+      Coordinate entrance;
+      entrance.x = ENTRANCEX;
+      entrance.y = ENTRANCEY;
+      StackArray<Coordinate> pathStack = rmap.findPath(current, dir, entrance);
+      Serial.println(pathStack.count());
+      
+      if (pathStack.count()<=1) break;
+      
+      pathStack.pop(); // the starting
+      Coordinate next = pathStack.pop();
+      
+      Serial.print("New destination");
+      rmap.printCoordinate(next);
+      Serial.println();
 
       rmap.printMap();
-
-
-      Serial.println("Current Tile");
-      rmap.printCoordinate(current);
-      Serial.println();
-      Serial.println("Current Dir");
-      Serial.println(dir);
-
-      rmap.printCoordinate(stack.pop());
       
-      Coordinate nextTile =stack.pop();
-
       
-      Serial.println("Next Tile");
-      rmap.printCoordinate(nextTile);
+      float values;
       
-      delay(5000);
       
-      int cx = current.x, cy = current.y, nx = nextTile.x, ny = nextTile.y;
-      
-      if(cx==nx && cy==ny-1) {
-      //  turnToHeading(NORTH);
-        //forwardToNextTile();
-        dir = North;
-      }else if (cx==nx-1 && cy==ny){
-        //turnToHeading(WEST);
-        //forwardToNextTile();
-        dir = West;
-      }else if (cx==nx && cy==ny+1){
-        //turnToHeading(EAST);
-        //forwardToNextTile();
-        dir = East;
+      if (current.x == next.x){
+        if (current.y > next.y) dir = North;
+        else dir = South;
       }else{
-        //turnToHeading(SOUTH);
-        //forwardToNextTile();
-        dir = South;
+        if (current.x>next.x) dir = West;
+        else dir = East;
       }
       
-      current.x=nextTile.x;
-      current.y=nextTile.y;
-        
+      current = next;
+      switch(dir){
+        case North: turnToHeading(NORTH); break;
+        case South: turnToHeading(SOUTH); break;
+        case East: turnToHeading(EAST); break;
+        default: turnToHeading(WEST);
+      }
+      
+      forwardToNextTile();
+      
+      //delay(7000);
     }
     
     drive.enableMotor(false);
@@ -189,7 +182,7 @@ void forwardToNextTile(){
     sensors.checkAllValues();
     float range = sensors.readings[Sensors::Dist_Front];
     int tiles_Infront = floor(range/300);
-    error = range- (tiles_Infront*300) - 100;
+    error = range- (tiles_Infront*300) - 90;
     moveForward(error * 0.95 /10);
-  } while(abs(error)>3.5);
+  } while(abs(error)>5);
 }
