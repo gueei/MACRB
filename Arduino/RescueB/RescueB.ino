@@ -60,7 +60,7 @@ void loop(){
 }
 
 void moveForward(float distanceCm){
-  drive.forwardDistance(2000, distanceCm);
+  drive.forwardDistance(750, distanceCm);
   while(drive.distanceToGo()!=0){
     drive.run();
   }
@@ -89,9 +89,10 @@ void taskRescue(){
     Coordinate current;
     current.x = ENTRANCEX;
     current.y = ENTRANCEY;
-    Direction dir = North;
+    Direction dir = East;
     
     while( true ){
+      blinkIndicator(2, 100);
       sensors.checkAllValues();
       
       if(sensors.readings[Sensors::Dist_Left]<=200 && sensors.readings[Sensors::Dist_Left]>0){
@@ -112,7 +113,7 @@ void taskRescue(){
       StackArray<Coordinate> pathStack = rmap.findPath(current, dir, entrance);
       Serial.println(pathStack.count());
       
-      if (pathStack.count()<=1) break;
+      if (pathStack.count()<1) break;
       
       pathStack.pop(); // the starting
       Coordinate next = pathStack.pop();
@@ -148,7 +149,17 @@ void taskRescue(){
       //delay(7000);
     }
     
+    blinkIndicator(5, 300);
     drive.enableMotor(false);
+}
+
+void blinkIndicator(int times, int interval){
+  for(int i=0;i<times; i++){
+    digitalWrite(LED_PIN, HIGH);
+    delay(interval);
+    digitalWrite(LED_PIN, LOW);
+    delay(interval);
+  }
 }
 
 Direction wallDir(Direction current, Direction relative){

@@ -9,8 +9,8 @@
 #define  MAP_WIDTH    5
 #define  MAP_HEIGHT   3
 
-#define ENTRANCEX  0
-#define ENTRANCEY  2
+#define ENTRANCEX  3
+#define ENTRANCEY  1
 
 #define BLACK_THRESHOLD 50
 #define VICTIM_TEMP  28
@@ -29,9 +29,9 @@
 #define RB_STEP A6
 #define RB_EN A2
 
-#define STEPS_FOR_1CM  73
-#define STEPS_FOR_360 6200
-#define ACCELERATION 500
+#define STEPS_FOR_1CM  36
+#define STEPS_FOR_360 3100
+#define ACCELERATION 1000
 
 // Software I2C
 // MLX90614

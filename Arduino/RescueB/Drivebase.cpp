@@ -1,6 +1,5 @@
 #include "Arduino.h"
 #include "Configuration.h"
-#include <AccelStepper.h>
 #include "Drivebase.h"
 
 Drivebase::Drivebase(){
@@ -33,19 +32,49 @@ void Drivebase::run(){
   rb.run();
 }
 
-void Drivebase::forwardSteps(int spd, long steps){
+void Drivebase::runSpeed(){
+  lf.runSpeedToPosition();
+  rf.runSpeedToPosition();
+  lb.runSpeedToPosition();
+  rb.runSpeedToPosition();
+}
+
+long Drivebase::currentPosition(){
+  return lf.currentPosition();
+}
+
+void Drivebase::setSpeed(int spd){
+  lf.setSpeed(spd);
+  rf.setSpeed(spd);
+  rb.setSpeed(spd);
+  lb.setSpeed(spd);
+}
+
+void Drivebase::setCurrentPosition(long pos){
+  lf.setCurrentPosition(pos);
+  rf.setCurrentPosition(pos);
+  lb.setCurrentPosition(pos);
+  rb.setCurrentPosition(pos);
+}
+
+void Drivebase::moveTo(long steps){
+  lf.moveTo(steps);
+  rf.moveTo(steps);
+  rb.moveTo(steps);
+  lb.moveTo(steps);
+}
+
+void Drivebase::setMaxSpeed(int spd){
   lf.setMaxSpeed(spd);
   lb.setMaxSpeed(spd);
   rf.setMaxSpeed(spd);
   rb.setMaxSpeed(spd);
-  lf.setCurrentPosition(0);
-  rf.setCurrentPosition(0);
-  lb.setCurrentPosition(0);
-  rb.setCurrentPosition(0);
-  lf.moveTo(steps);
-  rf.moveTo(steps);
-  rb.moveTo(steps);
-  lb.moveTo(steps);  
+}
+
+void Drivebase::forwardSteps(int spd, long steps){
+    setMaxSpeed(spd);
+    setCurrentPosition(0);
+    moveTo(steps);
 }
 
 long Drivebase::distanceToGo(){

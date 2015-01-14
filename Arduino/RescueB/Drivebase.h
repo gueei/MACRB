@@ -14,6 +14,14 @@ public:
   
   void run();
   
+  // For constant speed use
+  void runSpeed();
+  void setCurrentPosition(long pos);
+  long currentPosition();
+  void setSpeed(int spd);
+  void moveTo(long steps);
+  void setMaxSpeed(int spd);
+  
   void forwardSteps(int spd, long steps);
   void forwardDistance(int spd, float distanceCM);
   void rotateSteps(int spd, long steps);
