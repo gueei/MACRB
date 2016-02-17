@@ -104,7 +104,6 @@ StackArray <Coordinate> Map::findPath(Coordinate start, Direction currentDirecti
   
   Q.push(start);
   while(!Q.isEmpty()){
-    Serial.println(freeMemory());
     t = Q.pop();
     
     int x = t.x;
@@ -242,7 +241,7 @@ void Map::debugMap(int w, int h, int ex, int ey){
   Map rmap = Map(w, h);
   start.x = ex;
   start.y = ey;
-  /*
+  
   rmap.setWall(0, 0,East);
   rmap.setWall(3, 0,East);
   rmap.setWall(7, 0,South);
@@ -264,28 +263,28 @@ void Map::debugMap(int w, int h, int ex, int ey){
   rmap.setWall(2, 3,East);
   rmap.setWall(5, 3,East);
   rmap.setWall(6, 3,East);
-  */
+
   
   rmap.printMap();
   dir = North;
   
   do {
+    Serial.print(F("Free Memory: \t"));
+    Serial.println(freeMemory());
+
     Coordinate entrance;
     entrance.x = ex;
     entrance.y = ey;
     
     StackArray<Coordinate> pathStack = rmap.findPath(start, dir, entrance);
-    Serial.print("2");
     rmap.tiles[start.x][start.y].visits++;  
  
     if (pathStack.count()<=1) break;
     
     pathStack.pop(); // the starting
     Coordinate next = pathStack.pop();
-    
-    
 
-    Serial.print("New destination");
+    Serial.print(F("New destination"));
     rmap.printCoordinate(next);
     Serial.println();
 

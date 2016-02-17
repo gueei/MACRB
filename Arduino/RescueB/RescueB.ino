@@ -16,12 +16,10 @@ boolean rotate = false;
 void setup(){
   // Hardware bus init
   
-  Serial.begin(9600);
+  Serial.begin(115200);
   delay(100);
   Serial.println("START");
   delay(500);
-  Serial.print("memory: \t");
-  Serial.println(freeMemory());
   Wire.begin();
   //sensors.init();
   
@@ -33,7 +31,7 @@ void setup(){
   //Map cmap(MAP_WIDTH, MAP_HEIGHT);
   //cmap.printMap();
 
-  Map::debugMap(8,8, 0, 0);
+  Map::debugMap(8,4, 0, 0);
   
   if(digitalRead(CALIBRATION_MODE_PIN)){
     for(;;){

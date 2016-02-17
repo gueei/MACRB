@@ -36,9 +36,9 @@ class Maptile{
     Maptile();  // Constructor
     TileType type;
     unsigned visits:4;
+    unsigned walls:4;
     void setWall(Direction dir, boolean on); //only one wall
     boolean hasWall(Direction dir);
-    unsigned walls:4;
   private:
 };
 

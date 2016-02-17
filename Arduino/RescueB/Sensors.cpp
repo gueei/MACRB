@@ -12,14 +12,14 @@ void Sensors::init(){
   
   // init Mangetometer
   Wire.beginTransmission(HMC5883L_Address);
-  Serial.println("Init HMC5883L");
+  Serial.println(F("Init HMC5883L"));
   Wire.write(0x01);
   Wire.write(Compass_Scale_Setting);
   Wire.endTransmission();
 
   // Mode continuous
   Wire.beginTransmission(HMC5883L_Address);
-  Serial.println("Set Mode to Continuous");
+  Serial.println(F("Set Mode to Continuous"));
   Wire.write(0x02);
   Wire.write(0x00);
   Wire.endTransmission();
@@ -49,11 +49,11 @@ void Sensors::checkAllValues(){
   readings[Dist_Right] = getIrDistance(DIST_RIGHT_PIN, 1);
   readings[FloorGray] = getGray();
   
-  Serial.println("Range");
+  Serial.println(F("Range"));
   readings[Dist_Front] = getRange();
   
 #if DEBUGLEVEL > 2
-  Serial.println("DEBUGLEVEL 3\tSensors::checkAllValues()");
+  Serial.println(F("DEBUGLEVEL 3\tSensors::checkAllValues()"));
   for(int i=0; i<SensorType_Count; i++){
     Serial.print(readings[i]);
     Serial.print("\t"); 

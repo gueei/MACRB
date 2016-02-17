@@ -7,7 +7,7 @@
 #define WEST 3.29
 
 #define MAP_MAX_WIDTH 10
-#define MAP_MAX_HEIGHT 10
+#define MAP_MAX_HEIGHT 6
 
 #define  MAP_WIDTH    5
 #define  MAP_HEIGHT   3
