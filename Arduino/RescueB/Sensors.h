@@ -1,6 +1,5 @@
 #include "Arduino.h"
 #include "Configuration.h"
-#include <i2cmaster.h>
 #include <Servo.h>
 
 #ifndef Sensors_h
@@ -35,6 +34,4 @@ class Sensors{
     Servo towerServo;
   private:
 };
-
-
 #endif

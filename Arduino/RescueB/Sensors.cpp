@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "Configuration.h"
 #include "Sensors.h"
-#include <i2cmaster.h>
+#include <Wire.h>
 #include <Servo.h>
 
 Sensors::Sensors(){}
@@ -11,30 +11,21 @@ void Sensors::init(){
   towerServo.writeMicroseconds(SENSOR_SERVO_CENTER);
   
   // init Mangetometer
-  i2c_start_wait(HMC5883L_Address_Write);
-  Serial.println(i2c_write(0x01));
-  Serial.println(i2c_write(Compass_Scale_Setting));
-  i2c_stop();
+  Wire.beginTransmission(HMC5883L_Address);
+  Serial.println("Init HMC5883L");
+  Wire.write(0x01);
+  Wire.write(Compass_Scale_Setting);
+  Wire.endTransmission();
 
   // Mode continuous
-  i2c_start_wait(HMC5883L_Address_Write);
-  Serial.println(i2c_write(0x02));
-  Serial.println(i2c_write(0x00));
-  i2c_stop();
+  Wire.beginTransmission(HMC5883L_Address);
+  Serial.println("Set Mode to Continuous");
+  Wire.write(0x02);
+  Wire.write(0x00);
+  Wire.endTransmission();
   
-#if DEBUGLEVEL > 4
-  i2c_start_wait(HMC5883L_Address_Write);
-  i2c_write(0x01);
-  i2c_rep_start(HMC5883L_Address_Read);
-  Serial.print("Scale setting: ");
-  Serial.println(i2c_readNak());
-  i2c_stop();
-#endif
-
   // init Range
-#if DEBUGLEVEL > 4
   Serial.println("KS109 Init");
-#endif
   ks109Init();
 
   for(int i=0; i<SensorType_Count; i++){
@@ -43,10 +34,10 @@ void Sensors::init(){
 }
 
 void Sensors::ks109Init(){
-  i2c_start_wait(KS109);             // Start communticating with KS103
-  i2c_write(0x02);                              // Send Reg
-  i2c_write(0x71);                                // Send 0x72 to set USB Power
-  i2c_stop();
+  Wire.beginTransmission(KS109);
+  Wire.write(0x02);
+  Wire.write(0x71);
+  Wire.endTransmission();
 }
 
 // Fill in the sensor values with the current readings
@@ -60,7 +51,6 @@ void Sensors::checkAllValues(){
   
   Serial.println("Range");
   readings[Dist_Front] = getRange();
-  
   
 #if DEBUGLEVEL > 2
   Serial.println("DEBUGLEVEL 3\tSensors::checkAllValues()");
@@ -88,16 +78,13 @@ float Sensors::getGray(){
 
 float Sensors::getHeading(){
   uint8_t buffer[6];
-  i2c_start_wait(HMC5883L_Address_Write);
-  i2c_write(0x03);
-  i2c_rep_start(HMC5883L_Address_Read);
-  buffer[0] = i2c_readAck();
-  buffer[1] = i2c_readAck();
-  buffer[2] = i2c_readAck();
-  buffer[3] = i2c_readAck();
-  buffer[4] = i2c_readAck();
-  buffer[5] = i2c_readNak();
-  i2c_stop();
+  Wire.beginTransmission(HMC5883L_Address);
+  Wire.write(0x03);
+  Wire.endTransmission(false);
+  Wire.requestFrom(HMC5883L_Address, 6);
+  Wire.write(0x03);
+  for(int i=0; i<6; i++)
+    buffer[i] = Wire.read();
 
   float xaxis = ((buffer[0] << 8) | buffer[1]) * Compass_Scale;
   float zaxis = ((buffer[2] << 8) | buffer[3]) * Compass_Scale;
@@ -125,58 +112,24 @@ float Sensors::getHeading(){
 }
 
 float Sensors::getRange(){
-  i2c_start_wait(KS109);             // Start communticating with KS103
-  i2c_write(0x02);                              // Send Reg
-  i2c_write(0xb8);                                // Send 0x72 to set USB Power
-  i2c_stop();
-  
-  i2c_start_wait(KS109);             // Start communticating with KS103
-  i2c_write(0x02);
-  i2c_stop();
+  Wire.beginTransmission(KS109);
+  Wire.write(0x02);
+  Wire.write(0xb8);
+  Wire.endTransmission();
+
+  Wire.beginTransmission(KS109);
+  Wire.write(0x02);
+  Wire.endTransmission();
   
   delay(80);
+
+  Wire.requestFrom(KS109, 2);
+  int high = Wire.read();
+  int low = Wire.read();
   
-  i2c_start_wait(KS109+1);             // Start communticating with KS103
-  
-  int high = i2c_readAck();
-  int low = i2c_readNak();
-  
-  int range = (high << 8) + low;
-  
-  i2c_stop();
-  return range;
+  return (high << 8) + low;
 }
 
 float Sensors::getTemperature(byte address) {
-  int dev = address;
-  int data_low = 0;
-  int data_high = 0;
-  int pec = 0;
-
-  // Write
-  i2c_start_wait(dev+I2C_WRITE);
-  i2c_write(0x07);
-
-  // Read
-  i2c_rep_start(dev+I2C_READ);
-  data_low = i2c_readAck();       // Read 1 byte and then send ack.
-  data_high = i2c_readAck();      // Read 1 byte and then send ack.
-  pec = i2c_readNak();
-  i2c_stop();
-
-  // This converts high and low bytes together and processes temperature, 
-  // MSB is a error bit and is ignored for temps.
-  double tempFactor = 0.02;       // 0.02 degrees per LSB (measurement 
-                                  // resolution of the MLX90614).
-  double tempData = 0x0000;       // Zero out the data
-  int frac;                       // Data past the decimal point
-
-  // This masks off the error bit of the high byte, then moves it left 
-  // 8 bits and adds the low byte.
-  tempData = (double)(((data_high & 0x007F) << 8) + data_low);
-  tempData = (tempData * tempFactor)-0.01;
-  float celcius = tempData - 273.15;
-  
-  // Returns temperature un Celcius.
-  return celcius;
+  return 0;
 }

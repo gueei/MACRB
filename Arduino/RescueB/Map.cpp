@@ -1,7 +1,7 @@
 #include <QueueList.h>
 #include <StackArray.h>
 #include "Configuration.h"
-
+#include <MemoryFree.h>
 #include "Map.h"
 
 // Constructor
@@ -22,15 +22,17 @@ void Maptile::setWall(Direction dir, boolean on){
 }
 
 
-Map::Map(int width, int height){
-  for(int y=0; y<height; y++){
-    for(int x=0; x<width; x++){
+Map::Map(unsigned char width, unsigned char height){
+  mapWidth = width;
+  mapHeight = height;
+  for(int y=0; y<mapHeight; y++){
+    for(int x=0; x<mapHeight; x++){
       tiles[x][y] = Maptile();
     } 
   }
 }
 
-void Map::setWall(int x, int y, Direction dir){
+void Map::setWall(unsigned char x, unsigned char y, Direction dir){
   if(dir==North){
     tiles[x][y].setWall(North,true);
     tiles[x][y-1].setWall(South,true);
@@ -55,8 +57,8 @@ void Map::setWall(Coordinate coor, Direction dir){
 
 void Map::printMap(){
   Serial.println("Map:");
-  for(int j=0; j<MAP_HEIGHT; j++){
-    for(int i=0; i<MAP_WIDTH; i++){
+  for(int j=0; j<mapHeight; j++){
+    for(int i=0; i<mapWidth; i++){
       Serial.print(tiles[i][j].type);
       Serial.print(" ");
       Serial.print(tiles[i][j].visits);
@@ -67,7 +69,7 @@ void Map::printMap(){
     
     Serial.println();
     
-    for(int i=0; i<MAP_WIDTH; i++){
+    for(int i=0; i<mapWidth; i++){
       if (tiles[i][j].hasWall(South)) Serial.print("---");
       else Serial.print("   ");      
       Serial.print("\t");
@@ -83,15 +85,16 @@ StackArray <Coordinate> Map::findPath(Coordinate start, Direction currentDirecti
   Coordinate t;
   Coordinate p; //present
   Coordinate n; //next
-  boolean V[MAP_WIDTH][MAP_HEIGHT]; // Visited Set
-  backTrack track[MAP_WIDTH][MAP_HEIGHT];
-  for(int i=0;i<MAP_WIDTH; i++)
-      for(int j=0;j<MAP_HEIGHT; j++)
+  boolean V[MAP_MAX_WIDTH][MAP_MAX_HEIGHT]; // Visited Set
+  backTrack track[MAP_MAX_WIDTH][MAP_MAX_HEIGHT];
+  for(int i=0;i<mapWidth; i++)
+      for(int j=0;j<mapHeight; j++)
         V[i][j] = false;
+        
   V[start.x][start.y] = true;
-  for(int j=0;j<MAP_WIDTH; j++){
-        for(int k=0;k<MAP_HEIGHT; k++){
-          track[j][k].cost=9999;
+  for(int j=0;j<mapWidth; j++){
+        for(int k=0;k<mapHeight; k++){
+          track[j][k].cost=255;
           track[j][k].prevTile.x = -1;
           track[j][k].prevTile.y = -1;
         }
@@ -101,6 +104,7 @@ StackArray <Coordinate> Map::findPath(Coordinate start, Direction currentDirecti
   
   Q.push(start);
   while(!Q.isEmpty()){
+    Serial.println(freeMemory());
     t = Q.pop();
     
     int x = t.x;
@@ -114,8 +118,8 @@ StackArray <Coordinate> Map::findPath(Coordinate start, Direction currentDirecti
   
 // FOR DEBUG
 #if DEBUGLEVEL > 5
-  for(int j=0;j<MAP_HEIGHT; j++){
-        for(int i=0;i<MAP_WIDTH; i++){
+  for(int j=0;j<mapHeight; j++){
+        for(int i=0;i<mapWidth; i++){
           Serial.print(track[i][j].cost);
           Serial.print("(");
           Serial.print(track[i][j].prevTile.x);
@@ -153,10 +157,10 @@ StackArray <Coordinate> Map::findPath(Coordinate start, Direction currentDirecti
 };
 
 void Map::findAvailableTile(
-  int cx, int cy, // Current Evaluating Tile 
+  unsigned char cx, unsigned char cy, // Current Evaluating Tile 
   Direction dir, // Look at this direction
-  boolean V[MAP_WIDTH][MAP_HEIGHT], 
-  backTrack track[MAP_WIDTH][MAP_HEIGHT], 
+  boolean V[MAP_MAX_WIDTH][MAP_MAX_HEIGHT], 
+  backTrack track[MAP_MAX_WIDTH][MAP_MAX_HEIGHT], 
   QueueList<Coordinate>& Q
 ){
   int destx = cx, desty = cy;
@@ -171,7 +175,7 @@ void Map::findAvailableTile(
       destx=cx-1; break;
   }
   
-  if (destx<0 || desty<0 || destx>MAP_WIDTH-1 || desty>MAP_HEIGHT-1) return;
+  if (destx<0 || desty<0 || destx>mapWidth-1 || desty>mapHeight-1) return;
 
   if (tiles[cx][cy].hasWall(dir) || V[destx][desty]) return;
 
@@ -201,13 +205,13 @@ void Map::findAvailableTile(
   track[destx][desty] = dTrack;
 }
 
-Coordinate Map::determineDestination(Coordinate start, backTrack track[MAP_WIDTH][MAP_HEIGHT]){
+Coordinate Map::determineDestination(Coordinate start, backTrack track[MAP_MAX_WIDTH][MAP_MAX_HEIGHT]){
   int smallest = 888;
   Coordinate output;
   output.x = -1;
   output.y = -1;
-  for(int y=0; y<MAP_HEIGHT; y++){
-    for(int x=0; x<MAP_WIDTH; x++){
+  for(int y=0; y<mapHeight; y++){
+    for(int x=0; x<mapWidth; x++){
       if (track[x][y].cost < smallest){
         if (start.x == x && start.y == y) continue;
         if (tiles[x][y].visits > 0) continue;
@@ -232,10 +236,10 @@ void Map::addVisit(Coordinate coor){
   tiles[coor.x][coor.y].visits++;
 }
 
-void Map::debugMap(int ex, int ey){
+void Map::debugMap(int w, int h, int ex, int ey){
   Coordinate start;
   Direction dir;
-  Map rmap = Map(ex, ey);
+  Map rmap = Map(w, h);
   start.x = ex;
   start.y = ey;
   /*
@@ -269,8 +273,9 @@ void Map::debugMap(int ex, int ey){
     Coordinate entrance;
     entrance.x = ex;
     entrance.y = ey;
-    StackArray<Coordinate> pathStack = rmap.findPath(start, dir, entrance);
     
+    StackArray<Coordinate> pathStack = rmap.findPath(start, dir, entrance);
+    Serial.print("2");
     rmap.tiles[start.x][start.y].visits++;  
  
     if (pathStack.count()<=1) break;

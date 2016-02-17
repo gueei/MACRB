@@ -6,6 +6,9 @@
 #define EAST 6.04
 #define WEST 3.29
 
+#define MAP_MAX_WIDTH 10
+#define MAP_MAX_HEIGHT 10
+
 #define  MAP_WIDTH    5
 #define  MAP_HEIGHT   3
 
@@ -56,21 +59,21 @@
 #define Compass_Scale_Setting  0x00 << 5
 
 // Ir Distance
-#define DIST_LEFT_PIN  A10
-#define DIST_RIGHT_PIN  A9
+#define DIST_LEFT_PIN  1
+#define DIST_RIGHT_PIN  2
 
 // Ground Gray Sensor
-#define GRAY_PIN  A11
+#define GRAY_PIN  3
 
 // Ultrasonic front - TODO
-#define KS109  0xe8
+#define KS109  0x74
 
 // Servo for sensor tower
 #define SENSOR_SERVO_PIN 11
 #define SENSOR_SERVO_CENTER 1586 // microsecond
 
 // LED
-#define LED_PIN  A12
+#define LED_PIN  13
 
 // Calibration Mode
 #define CALIBRATION_MODE_PIN  40

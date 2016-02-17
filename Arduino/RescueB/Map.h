@@ -7,7 +7,7 @@
 
 enum TileType{
   normal = 1,
-  black = 9999,
+  black = 200,
   victim = 2,
   debris = 10,
   speedbump = 20,
@@ -22,12 +22,12 @@ enum Direction{
 };
 
 struct Coordinate{
-  int x, y;
+  unsigned x:4, y:4;
 };
 
 struct backTrack{
   Coordinate prevTile;
-  int cost;
+  unsigned char cost;
   Direction facing;
 };
 
@@ -35,26 +35,27 @@ class Maptile{
   public:
     Maptile();  // Constructor
     TileType type;
-    int visits;
+    unsigned visits:4;
     void setWall(Direction dir, boolean on); //only one wall
     boolean hasWall(Direction dir);
-    byte walls;
+    unsigned walls:4;
   private:
 };
 
 class Map{
   public:
-    Map(int width, int height);
-    Maptile tiles[MAP_WIDTH][MAP_HEIGHT];
+    Map(unsigned char width, unsigned char height);
+    Maptile tiles[MAP_MAX_WIDTH][MAP_MAX_HEIGHT];
     void setWall(Coordinate coor, Direction dir);// both walls at once
-    void setWall(int x, int y, Direction dir);//same as above but different way to input parameters
+    void setWall(unsigned char x, unsigned char y, Direction dir);//same as above but different way to input parameters
     void printMap();
     void addVisit(Coordinate coor);
     StackArray <Coordinate> findPath(Coordinate start, Direction currentDirection, Coordinate entrance);
     void printCoordinate(Coordinate coor);
-    static void debugMap(int ex, int ey);
+    static void debugMap(int w, int h, int ex, int ey);
   private:
-    void findAvailableTile(int cx, int cy, Direction dir, 
-      boolean V[MAP_WIDTH][MAP_HEIGHT], backTrack track[MAP_WIDTH][MAP_HEIGHT], QueueList<Coordinate>& Q);
-    Coordinate determineDestination(Coordinate start, backTrack track[MAP_WIDTH][MAP_HEIGHT]);
+    int mapWidth, mapHeight;
+    void findAvailableTile(unsigned char cx, unsigned char cy, Direction dir, 
+      boolean V[MAP_MAX_WIDTH][MAP_MAX_HEIGHT], backTrack track[MAP_MAX_WIDTH][MAP_MAX_HEIGHT], QueueList<Coordinate>& Q);
+    Coordinate determineDestination(Coordinate start, backTrack track[MAP_MAX_WIDTH][MAP_MAX_HEIGHT]);
 };
