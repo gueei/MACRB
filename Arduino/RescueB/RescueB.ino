@@ -35,7 +35,7 @@ void setup(){
   //Map cmap(MAP_WIDTH, MAP_HEIGHT);
   //cmap.printMap();
 
-  //Map::debugMap(8,4, 0, 0);
+  //Map::debugMap(6,4, 0, 0);
 }
 
 void loop(){

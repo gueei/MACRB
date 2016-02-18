@@ -6,6 +6,7 @@
 #define EAST 6.04
 #define WEST 3.29
 
+// MAP MAX WIDTH/HEIGHT must be smaller or less than 15, due to the problem of 4-bit integer
 #define MAP_MAX_WIDTH 10
 #define MAP_MAX_HEIGHT 6
 

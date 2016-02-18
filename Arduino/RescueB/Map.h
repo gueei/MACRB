@@ -1,9 +1,10 @@
-
 #include <Arduino.h>
 #include <inttypes.h>
 #include "Configuration.h"
 #include <QueueList.h>
 #include <StackArray.h>
+
+#define UNDEF_TILE  15
 
 enum TileType{
   normal = 1,
@@ -52,7 +53,7 @@ class Map{
     void addVisit(Coordinate coor);
     StackArray <Coordinate> findPath(Coordinate start, Direction currentDirection, Coordinate entrance);
     void printCoordinate(Coordinate coor);
-    static void debugMap(int w, int h, int ex, int ey);
+    static void debugMap(unsigned char w, unsigned char h, unsigned char ex, unsigned char ey);
   private:
     int mapWidth, mapHeight;
     void findAvailableTile(unsigned char cx, unsigned char cy, Direction dir, 
