@@ -22,16 +22,16 @@ class Sensors{
     
     Sensors();
     void init();
-    void checkAllValues(); // Call at certain frequency 
     // Basic functions
-    float getTemperature(byte address);
+    float getTemperatureLeft();
+    float getTemperatureRight();
     float getHeading();
-    float getIrDistance(int pin, int samples);
+    float getIrDistance(int pin, int samples=3);
     float getGray();
-    float readings[SensorType_Count];
     float getRange();
-    void ks109Init();
-    Servo towerServo;
   private:
+    float getTemperature(byte address);
+    Servo towerServo;
+    void ks109Init();
 };
 #endif

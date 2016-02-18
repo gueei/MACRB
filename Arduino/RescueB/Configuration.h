@@ -1,4 +1,4 @@
-#define DEBUGLEVEL  6 // 0 - no debug, 1 - basic, 5 - verbal
+#define DEBUGLEVEL  0 // 0 - no debug, 1 - basic, 5 - verbal
 #include "Arduino.h"
 
 #define NORTH 4.65
@@ -18,28 +18,13 @@
 #define BLACK_THRESHOLD 50
 #define VICTIM_TEMP  28
 
-// Stepper Motor definitions
-#define LF_DIR 28
-#define LF_STEP 26
-#define LF_EN 24
-#define LB_DIR 34
-#define LB_STEP 36
-#define LB_EN 30
-#define RF_DIR A1
-#define RF_STEP A0
-#define RF_EN 38
-#define RB_DIR A7
-#define RB_STEP A6
-#define RB_EN A2
-
-#define STEPS_FOR_1CM  36
-#define STEPS_FOR_360 3100
-#define ACCELERATION 1000
+// Motor pin definitions
+#define EN1 4
 
 // Software I2C
 // MLX90614
-#define TEMP_LEFT_ADDR 0x5A<<1
-#define TEMP_RIGHT_ADDR 0x55<<1
+#define TEMP_LEFT_ADDR 0x5C
+#define TEMP_RIGHT_ADDR 0x55
 
 // HMC5883L - Compass
 #define HMC5883L_Address 0x1E

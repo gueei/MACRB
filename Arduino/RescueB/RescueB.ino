@@ -15,13 +15,17 @@ float initOrientation = 0;
 boolean rotate = false;
 void setup(){
   // Hardware bus init
+  Wire.begin();
   
   Serial.begin(115200);
   delay(100);
-  Serial.println("START");
+  Serial.println(F("START"));
   delay(500);
-  Wire.begin();
-  //sensors.init();
+
+  Serial.println(F("Sensor Initialization"));
+  sensors.init();
+
+  Serial.println(F("Sensor Init complete"));
   
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, HIGH);
@@ -31,17 +35,15 @@ void setup(){
   //Map cmap(MAP_WIDTH, MAP_HEIGHT);
   //cmap.printMap();
 
-  Map::debugMap(8,4, 0, 0);
-  
-  if(digitalRead(CALIBRATION_MODE_PIN)){
-    for(;;){
-      sensors.checkAllValues();
-      delay(500);
-    }
-  }
+  //Map::debugMap(8,4, 0, 0);
 }
 
 void loop(){
-  sensors.checkAllValues();
-  delay(500);
+  Serial.print("heading\t");
+  Serial.println(sensors.getHeading());
+
+  Serial.println(sensors.getRange());
+  Serial.println(sensors.getTemperatureRight());
+  
+  delay(1000);
 }

@@ -25,12 +25,8 @@ void Sensors::init(){
   Wire.endTransmission();
   
   // init Range
-  Serial.println("KS109 Init");
+  Serial.println(F("KS109 Init"));
   ks109Init();
-
-  for(int i=0; i<SensorType_Count; i++){
-    readings[i] = -1;
-  }
 }
 
 void Sensors::ks109Init(){
@@ -38,28 +34,6 @@ void Sensors::ks109Init(){
   Wire.write(0x02);
   Wire.write(0x71);
   Wire.endTransmission();
-}
-
-// Fill in the sensor values with the current readings
-void Sensors::checkAllValues(){
-  readings[Heading] = getHeading();
-  readings[Temp_Left] = getTemperature(TEMP_LEFT_ADDR);
-  readings[Temp_Right] = getTemperature(TEMP_RIGHT_ADDR);
-  readings[Dist_Left] = getIrDistance(DIST_LEFT_PIN, 1);
-  readings[Dist_Right] = getIrDistance(DIST_RIGHT_PIN, 1);
-  readings[FloorGray] = getGray();
-  
-  Serial.println(F("Range"));
-  readings[Dist_Front] = getRange();
-  
-#if DEBUGLEVEL > 2
-  Serial.println(F("DEBUGLEVEL 3\tSensors::checkAllValues()"));
-  for(int i=0; i<SensorType_Count; i++){
-    Serial.print(readings[i]);
-    Serial.print("\t"); 
-  }
-  Serial.println();
-#endif
 }
 
 float Sensors::getIrDistance(int pin, int samples){
@@ -131,5 +105,42 @@ float Sensors::getRange(){
 }
 
 float Sensors::getTemperature(byte address) {
-  return 0;
+  int dev = address;
+  int data_low = 0;
+  int data_high = 0;
+  int pec = 0;
+  Wire.beginTransmission(address);
+  Wire.write(0x07);
+  Wire.endTransmission(false);
+
+  Wire.requestFrom(address, 3);
+  data_low = Wire.read();
+  data_high = Wire.read();
+  pec= Wire.read();
+
+  // This converts high and low bytes together and processes temperature, 
+  // MSB is a error bit and is ignored for temps.
+  double tempFactor = 0.02;       // 0.02 degrees per LSB (measurement 
+                                  // resolution of the MLX90614).
+  double tempData = 0x0000;       // Zero out the data
+  int frac;                       // Data past the decimal point
+
+  // This masks off the error bit of the high byte, then moves it left 
+  // 8 bits and adds the low byte.
+  tempData = (double)(((data_high & 0x007F) << 8) + data_low);
+  tempData = (tempData * tempFactor)-0.01;
+  float celcius = tempData - 273.15;
+  
+  // Returns temperature un Celcius.
+  return celcius;
 }
+
+float Sensors::getTemperatureLeft(){
+  return getTemperature(TEMP_LEFT_ADDR);
+}
+
+float Sensors::getTemperatureRight(){
+  return getTemperature(TEMP_RIGHT_ADDR);
+}
+
+
