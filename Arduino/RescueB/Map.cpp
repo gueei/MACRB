@@ -237,7 +237,21 @@ void Map::printCoordinate(Coordinate coor){
 }
 
 void Map::addVisit(Coordinate coor){
-  tiles[coor.x][coor.y].visits++;
+  char visits = tiles[coor.x][coor.y].visits + 1;
+  visits < 15 ? tiles[coor.x][coor.y].visits = visits : visits = 15;
+}
+
+void Map::setBlackTile(Coordinate coor){
+  tiles[coor.x][coor.y].type = TileType::black;
+  tiles[coor.x][coor.y].visits = 15;
+}
+
+void Map::setVictim(Coordinate coor){
+  tiles[coor.x][coor.y].type = TileType::victim;
+}
+
+boolean Map::hasVictim(Coordinate coor){
+  return tiles[coor.x][coor.y].type == TileType::victim;
 }
 
 void Map::debugMap(unsigned char w, unsigned char h, unsigned char ex, unsigned char ey){
