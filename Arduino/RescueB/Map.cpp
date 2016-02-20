@@ -35,19 +35,19 @@ Map::Map(unsigned char width, unsigned char height){
 void Map::setWall(unsigned char x, unsigned char y, Direction dir){
   if(dir==North){
     tiles[x][y].setWall(North,true);
-    tiles[x][y-1].setWall(South,true);
+    if (y>0) tiles[x][y-1].setWall(South,true);
   }
   if(dir==East){
     tiles[x][y].setWall(East,true);
-    tiles[x+1][y].setWall(West,true);
+    if (x<=MAP_MAX_WIDTH - 1) tiles[x+1][y].setWall(West,true);
   }
   if(dir==South){
     tiles[x][y].setWall(South,true);
-    tiles[x][y+1].setWall(North,true);
+    if (y<=MAP_MAX_WIDTH - 1) tiles[x][y+1].setWall(North,true);
   }
   if(dir==West){
     tiles[x][y].setWall(West,true);
-    tiles[x-1][y].setWall(East,true);
+    if (x>0) tiles[x-1][y].setWall(East,true);
   }
 }
 
@@ -177,7 +177,7 @@ void Map::findAvailableTile(
       destx=cx-1; break;
   }
   
-  if (destx==UNDEF_TILE || desty==UNDEF_TILE || destx>mapWidth-1 || desty>mapHeight-1) return;
+  if (destx<0 || desty<0 || destx>mapWidth-1 || desty>mapHeight-1) return;
 
   if (tiles[cx][cy].hasWall(dir) || V[destx][desty]) return;
 
